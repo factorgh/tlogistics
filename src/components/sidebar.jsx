@@ -4,7 +4,6 @@ import {
   AiOutlineOrderedList,
   AiOutlineSafety,
   AiOutlineUnorderedList,
-  AiOutlineUserAdd,
   AiOutlineUsergroupAdd,
   AiOutlineUsergroupDelete,
   AiTwotoneCar,
@@ -38,11 +37,6 @@ const mainContent = [
 ];
 
 const sideContent1 = [
-  {
-    label: "Add Customer",
-    path: "/main/add-customer",
-    icon: <AiOutlineUserAdd size={20} />,
-  },
   {
     label: "Customer List",
     path: "/main/list-customer",

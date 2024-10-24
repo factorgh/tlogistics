@@ -1,5 +1,6 @@
 import { MdLogout } from "react-icons/md";
 import { Outlet, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Sidebar from "../components/sidebar";
 import Wrapper from "../core/wrapper";
 
@@ -8,6 +9,8 @@ const Layout = () => {
 
   // Correctly wrap the navigation logic in an arrow function
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    toast.success("logged out successfully");
     navigate("/");
   };
 

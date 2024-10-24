@@ -3,50 +3,28 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdEyeOff } from "react-icons/io";
-import { Link } from "react-router-dom";
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    email: "bale@example.com",
-    phone: "555-555-5555",
-    location: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    phone: "555-555-5555",
-    email: "bale@example.com",
-    location: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    phone: "555-555-5555",
-    email: "bale@example.com",
-    location: "New York No. 2 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    phone: "555-555-5555",
-    email: "bale@example.com",
-    location: "London No. 2 Lake Park",
-  },
-];
-const CustomerList = () => {
+import { useNavigate } from "react-router-dom";
+import { useGetCustomersQuery } from "../../app/services/customer/customer";
+
+const CustomerListTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const { data, isFetching } = useGetCustomersQuery();
+  const navigate = useNavigate();
+  console.log(data);
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
+
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
   };
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -55,12 +33,7 @@ const CustomerList = () => {
       clearFilters,
       close,
     }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
@@ -69,10 +42,7 @@ const CustomerList = () => {
             setSelectedKeys(e.target.value ? [e.target.value] : [])
           }
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
-          }}
+          style={{ marginBottom: 8, display: "block" }}
         />
         <Space>
           <Button
@@ -80,18 +50,14 @@ const CustomerList = () => {
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Search
           </Button>
           <Button
             onClick={() => clearFilters && handleReset(clearFilters)}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Reset
           </Button>
@@ -99,33 +65,21 @@ const CustomerList = () => {
             type="link"
             size="small"
             onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
+              confirm({ closeDropdown: false });
               setSearchText(selectedKeys[0]);
               setSearchedColumn(dataIndex);
             }}
           >
             Filter
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
+          <Button type="link" size="small" onClick={() => close()}>
+            Close
           </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
+      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
     ),
     onFilter: (value, record) =>
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
@@ -137,10 +91,7 @@ const CustomerList = () => {
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ""}
@@ -149,53 +100,67 @@ const CustomerList = () => {
         text
       ),
   });
+
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width: "30%",
+      width: 150,
       ...getColumnSearchProps("name"),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      width: "20%",
+      width: 150,
       ...getColumnSearchProps("email"),
     },
+
     {
       title: "Phone",
       dataIndex: "phone",
-      key: "email",
-      width: "20%",
+      key: "phone",
+      width: 150,
       ...getColumnSearchProps("phone"),
     },
     {
-      title: "Location",
-      dataIndex: "location",
-      key: "location",
-      ...getColumnSearchProps("location"),
-      sorter: (a, b) => a.location.length - b.location.length,
-      sortDirections: ["descend", "ascend"],
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+      width: 150,
+      ...getColumnSearchProps("address"),
     },
+
     {
       title: "Action",
       dataIndex: "",
-      key: "x",
-      render: () => (
-        <Link to="/main/customer-detail">
-          <IoMdEyeOff />
-        </Link>
+      key: "action",
+      width: 100,
+      render: (_, record) => (
+        <a>
+          <IoMdEyeOff
+            onClick={() =>
+              navigate("/main/customer-detail", {
+                state: { customerId: record.id },
+              })
+            }
+          />
+        </a>
       ),
     },
   ];
+
   return (
     <Table
+      pagination={{ defaultPageSize: 8, showSizeChanger: false }}
+      loading={isFetching}
       columns={columns}
-      dataSource={data}
-      className="border border-gray-200  rounded-md"
+      dataSource={data?.customers}
+      scroll={{ x: 1000 }}
+      className="border border-slate-200 rounded-md"
     />
   );
 };
-export default CustomerList;
+
+export default CustomerListTable;

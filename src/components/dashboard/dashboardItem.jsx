@@ -8,7 +8,7 @@ const DashboardItem = ({ headerTitle, text, icon, headerText }) => {
   const borderColor = getBorderColor(headerTitle);
 
   return (
-    <Card className={`border-l-4 ${borderColor} `}>
+    <Card className={`border-l-4 ${borderColor} shadow-md`}>
       <div className="flex justify-between items-center">
         <div>
           <h5 className="text-sm  text-gray-600">{headerText}</h5>

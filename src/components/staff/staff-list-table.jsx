@@ -3,13 +3,16 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdEyeOff } from "react-icons/io";
-
-const data = [];
+import { useNavigate } from "react-router-dom";
+import { useGetStaffsQuery } from "../../app/services/staff/staff";
 
 const StaffListTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const { data, isFetching } = useGetStaffsQuery();
+  const navigate = useNavigate();
+  console.log(data?.users);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -107,12 +110,13 @@ const StaffListTable = () => {
       ...getColumnSearchProps("name"),
     },
     {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
+      title: "Position",
+      dataIndex: "position",
+      key: "position",
       width: 150,
       ...getColumnSearchProps("role"),
     },
+
     {
       title: "Phone",
       dataIndex: "phone",
@@ -133,19 +137,24 @@ const StaffListTable = () => {
       dataIndex: "",
       key: "action",
       width: 100,
-      render: () => (
+      render: (_, record) => (
         <a>
-          <IoMdEyeOff />
+          <IoMdEyeOff
+            onClick={() =>
+              navigate("/main/staff-detail", { state: { staffId: record.id } })
+            }
+          />
         </a>
       ),
     },
-    // Add more columns as needed
   ];
 
   return (
     <Table
+      pagination={{ defaultPageSize: 8, showSizeChanger: false }}
+      loading={isFetching}
       columns={columns}
-      dataSource={data}
+      dataSource={data?.users}
       scroll={{ x: 1000 }}
       className="border border-slate-200 rounded-md"
     />

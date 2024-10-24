@@ -1,21 +1,22 @@
 import { Form as AntForm, Button, Input } from "antd";
 import { Field, Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import * as Yup from "yup";
-import { Spinner } from "../core/spinner";
+import { useLoginUserMutation } from "../../app/services/auth/auth"; // Import the useLoginMutation hook
+import { Spinner } from "../../core/spinner";
 
 const { Item } = AntForm;
 
-// Spinner component
-
 const LoginForm = () => {
   const navigate = useNavigate();
+  const [loginUser, { isLoading, error }] = useLoginUserMutation(); // Use the login mutation
 
   // Validation schema using Yup
   const validationSchema = Yup.object({
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
+    username: Yup.string()
+      .min(6, "Username must be at least 6 characters long")
+      .required("Username is required"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters long")
       .required("Password is required"),
@@ -24,16 +25,25 @@ const LoginForm = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-blue-500">
       <Formik
-        initialValues={{ email: "", password: "" }}
+        initialValues={{ username: "", password: "" }}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            console.log(values);
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            const result = await loginUser(values);
 
+            if (result?.data?.status === "success") {
+              localStorage.setItem("token", result.data.user.token);
+              toast.success("Logged in successfully");
+              navigate("/main/dashboard");
+            } else {
+              toast.error(result.error.data.message || "Login failed");
+            }
+          } catch (err) {
+            console.error("Login error:", err);
+            toast.error(error.data.message || "Login failed");
+          } finally {
             setSubmitting(false);
-          }, 2000);
-
-          navigate("/main/dashboard");
+          }
         }}
       >
         {({ errors, touched, isSubmitting, handleSubmit }) => (
@@ -42,7 +52,6 @@ const LoginForm = () => {
             layout="vertical"
             className="w-full max-w-md p-8 bg-white shadow-md rounded-lg relative"
           >
-            {/* Logo with centered position */}
             <div className="flex justify-center mb-3">
               <img
                 src="/images/logo.svg"
@@ -51,17 +60,25 @@ const LoginForm = () => {
               />
             </div>
 
+            {/* {error && (
+              <p className="text-red-500 text-center mb-4">
+                {error?.data?.message || "Login failed"}
+              </p>
+            )} */}
+
             <Item
-              label="Email"
+              label="Username"
               validateStatus={
-                touched.email && errors.email ? "error" : "success"
+                touched.username && errors.username ? "error" : "success"
               }
-              help={touched.email && errors.email ? errors.email : null}
+              help={
+                touched.username && errors.username ? errors.username : null
+              }
             >
               <Field
-                name="email"
+                name="username"
                 as={Input}
-                placeholder="Enter your email"
+                placeholder="Enter your username"
                 className="custom-field"
               />
             </Item>
@@ -87,9 +104,9 @@ const LoginForm = () => {
                 type="primary"
                 htmlType="submit"
                 className="w-full flex justify-center items-center"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoading}
               >
-                {isSubmitting ? <Spinner /> : "Login"}
+                {isSubmitting || isLoading ? <Spinner /> : "Login"}
               </Button>
             </Item>
             <div className="text-center">

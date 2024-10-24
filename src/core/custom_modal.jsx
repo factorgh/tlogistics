@@ -2,7 +2,13 @@
 import { Button, Modal } from "antd";
 import { useState } from "react";
 
-const CustomModal = ({ buttonTitle, children, header }) => {
+const CustomModal = ({
+  buttonTitle,
+  children,
+  header,
+  handleClick,
+  formInstance,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -10,11 +16,20 @@ const CustomModal = ({ buttonTitle, children, header }) => {
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
+    formInstance
+      .validateFields()
+      .then(() => {
+        handleClick();
+        setIsModalOpen(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("Validation failed");
+      });
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsModalOpen(false); // Close modal on cancel
   };
 
   return (
@@ -30,7 +45,7 @@ const CustomModal = ({ buttonTitle, children, header }) => {
         okText="Add"
         cancelText="Close"
         cancelButtonProps={{
-          style: { backgroundColor: "#858796", color: "white" }, // Change button color
+          style: { backgroundColor: "#858796", color: "white" },
         }}
       >
         {children}

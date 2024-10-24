@@ -1,38 +1,54 @@
 import { Form as AntForm, Button, Input } from "antd";
 import { Field, Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import * as Yup from "yup";
-import { Spinner } from "../core/spinner";
+import { useRegisterUserMutation } from "../../app/services/auth/auth";
+import { Spinner } from "../../core/spinner";
 
 const { Item } = AntForm;
 
-// Spinner component
-
 const SignUpForm = () => {
+  const [registerUser, { isLoading, error }] = useRegisterUserMutation();
+  const navigate = useNavigate(); // To navigate after successful registration
+
   // Validation schema using Yup
   const validationSchema = Yup.object({
     license: Yup.string()
-      .min(6, "License must be at least 6 characters long")
-      .required("Username is required"),
+      .min(3, "License must be at least 3 characters long")
+      .required("License is required"),
     username: Yup.string()
       .min(6, "Username must be at least 6 characters long")
       .required("Username is required"),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters long")
+      .min(8, "Password must be at least 8 characters long")
+      .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+      .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .matches(/[0-9]/, "Password must contain at least one number")
+      .matches(/[\W_]/, "Password must contain at least one special character")
       .required("Password is required"),
   });
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-blue-500">
       <Formik
-        initialValues={{ email: "", password: "" }}
+        initialValues={{ license: "", username: "", password: "" }}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            console.log(values);
-            alert("Login successful!");
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            // Call the API to register the user
+            const response = await registerUser(values).unwrap();
+
+            console.log("Registration successful:", response);
+            localStorage.setItem("token", response.data.user.token); // Store the token
+
+            navigate("/main/dashboard");
+          } catch (err) {
+            console.error("Registration failed:", err);
+            toast.error(error?.data.message || "Registration failed");
+          } finally {
             setSubmitting(false);
-          }, 2000);
+          }
         }}
       >
         {({ errors, touched, isSubmitting, handleSubmit }) => (
@@ -53,9 +69,9 @@ const SignUpForm = () => {
             <Item
               label="License / Code"
               validateStatus={
-                touched.email && errors.email ? "error" : "success"
+                touched.license && errors.license ? "error" : "success"
               }
-              help={touched.email && errors.email ? errors.email : null}
+              help={touched.license && errors.license ? errors.license : null}
             >
               <Field
                 name="license"
@@ -97,14 +113,22 @@ const SignUpForm = () => {
               />
             </Item>
 
+            {/* Display API error message if any */}
+            {error && (
+              <div className="text-red-500 mb-2">
+                {error?.data?.message ||
+                  "Something went wrong. Please try again."}
+              </div>
+            )}
+
             <Item>
               <Button
                 type="primary"
                 htmlType="submit"
                 className="w-full flex justify-center items-center"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoading}
               >
-                {isSubmitting ? <Spinner /> : "Sign Up"}
+                {isSubmitting || isLoading ? <Spinner /> : "Sign Up"}
               </Button>
             </Item>
             <div className="mt-4 flex justify-center">
