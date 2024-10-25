@@ -54,7 +54,7 @@ const LoginForm = () => {
           >
             <div className="flex justify-center mb-3">
               <img
-                src="/images/logo.svg"
+                src="/images/logo.png"
                 alt="random"
                 className="w-32 h-32 object-contain"
               />
