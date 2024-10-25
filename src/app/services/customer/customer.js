@@ -12,7 +12,7 @@ export const customerApi = baseApi.injectEndpoints({
     }),
     updateCustomer: builder.mutation({
       query: ({ id, ...customerData }) => ({
-        url: `/customer/${id}`,
+        url: `/customer/single/${id}`,
         method: "PUT",
         body: customerData,
       }),
@@ -20,7 +20,7 @@ export const customerApi = baseApi.injectEndpoints({
     }),
     deleteCustomer: builder.mutation({
       query: (id) => ({
-        url: `/customer/${id}`,
+        url: `/customer/single/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["customer"],

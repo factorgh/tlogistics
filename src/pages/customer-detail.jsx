@@ -1,6 +1,6 @@
 import { Button, Divider, Form, Input, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { useEffect, useState } from "react"; // Import useEffect
+import { useEffect, useState } from "react";
 import {
   MdEdit,
   MdOutlineLocalShipping,
@@ -8,7 +8,7 @@ import {
   MdPayment,
   MdPayments,
 } from "react-icons/md";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   useDeleteCustomerMutation,
@@ -24,50 +24,62 @@ const CustomerDetail = () => {
   const [form] = Form.useForm();
   const [showFilter, setShowFilter] = useState("invoices");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const userId = location.state.customerId;
-  console.log("Customer ID:", userId);
   const { data, isFetching, error } = useGetSingleCustomerQuery(userId);
   const [updateCustomer, { isLoading }] = useUpdateCustomerMutation();
-  const [deleteCustomer, { isLoading: delLoading, isSuccess }] =
-    useDeleteCustomerMutation(userId);
-  console.log(data);
+  const [
+    deleteCustomer,
+    { isLoading: delLoading, isSuccess, error: deleteError },
+  ] = useDeleteCustomerMutation();
 
   useEffect(() => {
     if (data) {
       form.setFieldsValue({
-        name: data?.customer.name || "",
-        email: data?.customer.email || "",
-        phone: data?.customer.phone || "",
-        address: data?.customer.address || "",
+        name: data?.customer?.name || "",
+        email: data?.customer?.email || "",
+        phone: data?.customer?.phone || "",
+        address: data?.customer?.address || "",
       });
     }
   }, [data, form]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Customer deleted successfully");
+      navigate("/main/list-customers");
+    }
+    if (deleteError) {
+      toast.error("Failed to delete customer");
+    }
+  }, [isSuccess, deleteError, navigate]);
+
   const handleSubmit = async (values) => {
-    console.log("Form Submitted", values);
-    toast.success("Customer Updated Successfully");
+    console.log(values);
     try {
       await updateCustomer({ ...values, id: userId }).unwrap();
+      toast.success("Customer updated successfully");
     } catch (error) {
       console.log(error);
-      toast.error("Failed to update Customer ");
+      toast.error("Failed to update customer");
     }
   };
 
   const handleDelete = async () => {
-    await deleteCustomer();
-  };
-
-  const handleButtonClick = (filter) => {
-    setShowFilter(filter);
+    try {
+      await deleteCustomer(userId).unwrap();
+    } catch {
+      console.log("Failed to delete customer");
+    }
   };
 
   if (isFetching) {
     return <Spin />;
   }
+
   if (error) {
-    toast.error(error?.data?.message);
+    toast.error(error?.data?.message || "Failed to fetch customer data");
   }
 
   return (
@@ -78,7 +90,7 @@ const CustomerDetail = () => {
             <img
               src="/images/profile.png"
               className="h-32 w-32 rounded-md"
-              alt=""
+              alt="Customer Profile"
             />
             <h5 className="mt-3 text-2xl font-bold mb-3">
               {data?.customer?.name}
@@ -103,20 +115,19 @@ const CustomerDetail = () => {
               <Button
                 type={showFilter === "invoices" ? "primary" : "default"}
                 icon={<MdPayments />}
-                onClick={() => handleButtonClick("invoices")}
+                onClick={() => setShowFilter("invoices")}
               >
                 Invoices
               </Button>
               <Button
                 type={showFilter === "edit" ? "primary" : "default"}
                 icon={<MdEdit />}
-                onClick={() => handleButtonClick("edit")}
+                onClick={() => setShowFilter("edit")}
               >
                 Edit
               </Button>
             </div>
 
-            {/* Handle filter here */}
             <div>
               {showFilter === "invoices" && (
                 <div>
@@ -161,58 +172,51 @@ const CustomerDetail = () => {
                   <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
                     <Divider />
                     <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Form.Item
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your name",
-                            },
-                          ]}
-                          label="Name"
-                          name="name"
-                        >
-                          <Input placeholder="Enter your name" />
-                        </Form.Item>
-                        <Form.Item
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your email",
-                            },
-                          ]}
-                          label="Email"
-                          name="email"
-                        >
-                          <Input placeholder="Enter your email" />
-                        </Form.Item>
-                      </div>
-                      <div>
-                        <Form.Item
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your phone",
-                            },
-                          ]}
-                          label="Phone"
-                          name="phone"
-                        >
-                          <Input placeholder="Enter your phone" />
-                        </Form.Item>
-                        <Form.Item
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your address",
-                            },
-                          ]}
-                          label="Address"
-                          name="address"
-                        >
-                          <Input placeholder="Enter your address" />
-                        </Form.Item>
-                      </div>
+                      <Form.Item
+                        label="Name"
+                        name="name"
+                        rules={[
+                          { required: true, message: "Please enter your name" },
+                        ]}
+                      >
+                        <Input placeholder="Enter your name" />
+                      </Form.Item>
+                      <Form.Item
+                        label="Email"
+                        name="email"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter your email",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Enter your email" />
+                      </Form.Item>
+                      <Form.Item
+                        label="Phone"
+                        name="phone"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter your phone",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Enter your phone" />
+                      </Form.Item>
+                      <Form.Item
+                        label="Address"
+                        name="address"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter your address",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Enter your address" />
+                      </Form.Item>
                     </div>
                     <Divider />
                     <div className="mt-5">
@@ -225,22 +229,23 @@ const CustomerDetail = () => {
                   </Form>
                   <div className="flex gap-3 mt-5">
                     <Button
-                      onClick={handleSubmit}
+                      onClick={() => form.submit()}
+                      disabled={isLoading}
                       className="border border-blue-500 text-blue-500"
                     >
                       {isLoading ? <Spinner /> : "Update"}
                     </Button>
                     <Button
                       onClick={handleDelete}
+                      disabled={delLoading}
                       className="border border-red-500 text-red-500"
                     >
-                      Delete Customer
+                      {delLoading ? <Spinner /> : "Delete Customer"}
                     </Button>
                   </div>
                 </div>
               )}
             </div>
-            {/* Handle filter end */}
           </div>
         </div>
       </div>
