@@ -4,13 +4,13 @@ export const crudService = (url) => ({
     method: "POST",
     body: data,
   }),
-  update: (data) => ({
-    url,
-    method: "PUT",
+  update: ({ id, data }) => ({
+    url: `${url}/single/${id}`,
+    method: "DELETE",
     body: data,
   }),
-  delete: (data) => ({
-    url,
+  delete: ({ id, data }) => ({
+    url: `${url}/single/${id}`,
     method: "DELETE",
     body: data,
   }),

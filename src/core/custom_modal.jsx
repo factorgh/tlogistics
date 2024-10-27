@@ -6,8 +6,14 @@ const CustomModal = ({
   buttonTitle,
   children,
   header,
-  handleClick,
-  formInstance,
+  handleOkClick,
+  isButton,
+  okText = "Save",
+  cancelText = "Close",
+  buttonStyle = {},
+  modalWidth = 600,
+  okButtonProps = {},
+  cancelButtonProps = {},
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -16,16 +22,8 @@ const CustomModal = ({
   };
 
   const handleOk = () => {
-    formInstance
-      .validateFields()
-      .then(() => {
-        handleClick();
-        setIsModalOpen(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log("Validation failed");
-      });
+    handleOkClick(); // Trigger the parent handler
+    setIsModalOpen(false); // Close modal on successful submission
   };
 
   const handleCancel = () => {
@@ -34,21 +32,44 @@ const CustomModal = ({
 
   return (
     <>
-      <Button type="primary" onClick={showModal} className="mb-3">
+      <Button
+        type={isButton ? "text" : "primary"}
+        onClick={showModal}
+        className="mb-3"
+        style={buttonStyle}
+      >
         {buttonTitle}
       </Button>
       <Modal
-        title={header}
+        title={
+          <span style={{ fontWeight: "bold", fontSize: "1.25rem" }}>
+            {header}
+          </span>
+        }
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
-        okText="Add"
-        cancelText="Close"
+        okText={okText}
+        cancelText={cancelText}
+        width={modalWidth}
+        okButtonProps={{
+          ...okButtonProps,
+          style: {
+            backgroundColor: "#4CAF50",
+            color: "white",
+            ...okButtonProps.style,
+          },
+        }}
         cancelButtonProps={{
-          style: { backgroundColor: "#858796", color: "white" },
+          ...cancelButtonProps,
+          style: {
+            backgroundColor: "#858796",
+            color: "white",
+            ...cancelButtonProps.style,
+          },
         }}
       >
-        {children}
+        <div style={{ padding: "20px", textAlign: "center" }}>{children}</div>
       </Modal>
     </>
   );

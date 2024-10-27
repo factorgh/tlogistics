@@ -6,7 +6,7 @@ import { useCreateCustomerMutation } from "../app/services/customer/customer";
 import CustomerListTable from "../components/customer/customer-list";
 import CustomHeader from "../core/custom-header";
 
-const StaffList = () => {
+const CustomerList = () => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [createCustomer, { isLoading, error }] = useCreateCustomerMutation();
@@ -132,4 +132,4 @@ const StaffList = () => {
   );
 };
 
-export default StaffList;
+export default CustomerList;

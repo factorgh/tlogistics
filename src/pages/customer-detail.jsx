@@ -10,6 +10,7 @@ import {
 } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import {
   useDeleteCustomerMutation,
   useGetSingleCustomerQuery,
@@ -56,9 +57,13 @@ const CustomerDetail = () => {
   }, [isSuccess, deleteError, navigate]);
 
   const handleSubmit = async (values) => {
-    console.log(values);
+    console.log("Form Values:", values);
     try {
-      await updateCustomer({ ...values, id: userId }).unwrap();
+      const result = await updateCustomer({
+        id: userId,
+        customerData: values,
+      }).unwrap();
+      console.log(result);
       toast.success("Customer updated successfully");
     } catch (error) {
       console.log(error);
@@ -66,11 +71,24 @@ const CustomerDetail = () => {
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      await deleteCustomer(userId).unwrap();
-    } catch {
-      console.log("Failed to delete customer");
+  const handleDelete = async (userId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this customer?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteCustomer({ id: userId }).unwrap();
+        toast.success("Customer deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete vendor");
+      }
     }
   };
 

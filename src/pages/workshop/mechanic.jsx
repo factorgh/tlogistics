@@ -1,80 +1,167 @@
-import { Button, Divider, Form, Input, Select } from "antd";
+import { Button, Divider, Form, Input, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { useState } from "react";
 import MechanicTable from "../../components/workshop/mechanic-table";
 import SparePartsInput from "../../components/workshop/spare-parts-input";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
-import CustomModal from "../../core/custom_modal";
 
 const Mechanic = () => {
   const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
 
-  const handleSubmit = () => {};
+  const handleSubmit = (values) => {
+    console.log(values);
+    // Handle form submission logic here
+    if (editingRecord) {
+      // Update the record
+      console.log("Updating record:", editingRecord.id);
+      // Code for updating record in the backend goes here
+    } else {
+      // Add a new record
+      console.log("Adding new record");
+      // Code for adding new record in the backend goes here
+    }
+    setIsModalVisible(false);
+    form.resetFields();
+    setEditingRecord(null);
+  };
+
+  const openModalForAdd = () => {
+    setEditingRecord(null);
+    form.resetFields();
+    setIsModalVisible(true);
+  };
+
+  const openModalForEdit = (record) => {
+    setEditingRecord(record);
+    form.setFieldsValue(record); // Populate the form with the record's data
+    setIsModalVisible(true);
+  };
 
   return (
     <CustomLayout>
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between">
         <CustomHeader headerTitle={"Workshop Mechanic"} />
         <div>
-          <CustomModal
-            buttonTitle={"Add Mechanic Summary"}
-            header="Add Mechanic Summary"
+          <Button
+            type="primary"
+            onClick={openModalForAdd}
+            className="bg-green-500 ml-3 text-white"
           >
-            <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
-              <div>
-                <Divider />
-                <div className="grid grid-cols-2 gap-3">
-                  <Form.Item
-                    label="Vehicle Maintenance"
-                    name={"vehicle maintenance"}
-                  >
-                    <Input />
-                  </Form.Item>
-
-                  <Form.Item label="Truck Assisstant" name={"truck assisstant"}>
-                    <Input />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Registration Ex.Date"
-                    name={" registration expiry date"}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    label="Insurance Ex.Date"
-                    name={"insurance expiry date"}
-                  >
-                    <Input />
-                  </Form.Item>
-                </div>
-                <SparePartsInput />
-                <Form.Item label="Ovehaul/Repair">
-                  <Select>
-                    <Select.Option value="repair">Repair</Select.Option>
-                    <Select.Option value="overhaul">Overhaul</Select.Option>
-                  </Select>
-                </Form.Item>
-                <div>
-                  <h5 className="mb-3">Diagonistic Services</h5>
-                  <TextArea rows={4} />
-                </div>
-                <div className="mt-3">
-                  <h5 className="mb-3">BreakDown Response Team</h5>
-                  <TextArea rows={4} />
-                </div>
-              </div>
-              {/* Add Seperator here */}
-            </Form>
-          </CustomModal>
+            Add Mechanic Summary
+          </Button>
           <Button type="primary" className="bg-green-500 ml-3 text-white">
             Daily Report
           </Button>
         </div>
       </div>
-      {/* Form section */}
 
-      <MechanicTable />
+      <MechanicTable onEdit={openModalForEdit} />
+
+      <Modal
+        width={800}
+        title={
+          editingRecord ? "Update Mechanic Summary" : "Add Mechanic Summary"
+        }
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+      >
+        <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
+          <Divider />
+          <div className="grid grid-cols-2 gap-3">
+            <Form.Item
+              label="Vehicle Maintenance"
+              name={"vehicleMaintenance"}
+              rules={[
+                { required: true, message: "Please enter vehicle maintenance" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Truck Assistant"
+              name={"truckAssistant"}
+              rules={[
+                { required: true, message: "Please enter truck assistant" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Registration Expiry Date"
+              name={"registrationExpiryDate"}
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter registration expiry date",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Insurance Expiry Date"
+              name={"insuranceExpiryDate"}
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter insurance expiry date",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </div>
+          <SparePartsInput />
+          <Form.Item label="Overhaul/Repair" name={"overhaulRepair"}>
+            <Select>
+              <Select.Option value="repair">Repair</Select.Option>
+              <Select.Option value="overhaul">Overhaul</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div>
+              <h5 className="mb-3">Diagnostic Services</h5>
+              <Form.Item
+                name={"diagnosticServices"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter diagnostic services",
+                  },
+                ]}
+              >
+                <TextArea rows={4} />
+              </Form.Item>
+            </div>
+
+            <div>
+              <h5 className="mb-3">Breakdown Response Team</h5>
+              <Form.Item
+                name={"breakdownResponseTeam"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter breakdown response team",
+                  },
+                ]}
+              >
+                <TextArea rows={4} />
+              </Form.Item>
+            </div>
+          </div>
+          <Button type="primary" htmlType="submit">
+            {editingRecord ? "Update" : "Submit"}
+          </Button>
+        </Form>
+      </Modal>
     </CustomLayout>
   );
 };
