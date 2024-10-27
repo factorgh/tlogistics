@@ -1,4 +1,6 @@
-import { Button, Divider, Form, Input } from "antd";
+import { Button, Divider, Form, Input, Modal } from "antd";
+import { useState } from "react";
+import PurchaseTable from "../../components/workshop/purchase-table";
 import SparePartsCost from "../../components/workshop/spare-parts-cost";
 import WorkingToolsCost from "../../components/workshop/working-tools-cost";
 import CustomHeader from "../../core/custom-header";
@@ -6,51 +8,68 @@ import CustomLayout from "../../core/custom-layout";
 
 const Purchase = () => {
   const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    // Handle form submission logic
+    setIsModalVisible(false); // Close modal after submission
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   return (
     <CustomLayout>
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between">
         <CustomHeader headerTitle={"Workshop Purchase"} />
-        <Button className="bg-green-500 text-white">Monthly Reports</Button>
+        <Button type="primary" className=" text-white" onClick={showModal}>
+          Add New Purchase
+        </Button>
       </div>
-      <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
-        <div>
+
+      <Modal
+        title="Purchase Details"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={800} // Customize modal width if needed
+      >
+        <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
           <Divider />
           <div className="grid grid-cols-2 gap-5">
             <SparePartsCost />
             <WorkingToolsCost />
           </div>
-        </div>
-        {/* Scrub section */}
-        <div className="mt-5 flex justify-between items-center">
-          <h2>Scrub Cost</h2>
-          <div className="mt-5">
-            <Form.Item name={"scrub cost"}>
-              <Input type="number" />
-            </Form.Item>
-          </div>
-        </div>
 
-        {/* Add Seperator here */}
-        <div className="mt-5 flex justify-between items-center">
-          <h2>Total Expenses</h2>
-          <div className="mt-5">Total Cost: $5,000</div>
-        </div>
-        <div>
+          {/* Scrub section */}
+          <div className="mt-5 flex justify-between items-center">
+            <h2>Scrub Cost</h2>
+            <div className="mt-5">
+              <Form.Item name={"scrub cost"}>
+                <Input type="number" />
+              </Form.Item>
+            </div>
+          </div>
+
+          {/* Add Separator here */}
+
           <Divider orientation="left" />
-          <div className="text-left">
-            <Form.Item>
-              <Button className="w-32" type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </div>
-        </div>
-      </Form>
 
-      {/* Form section */}
+          <Form.Item>
+            <Button className="w-32" type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Table  */}
+      <PurchaseTable />
     </CustomLayout>
   );
 };

@@ -1,6 +1,11 @@
 import { Button, Divider, Form, Input, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import {
+  useCreateMechanicMutation,
+  useUpdateMechanicMutation,
+} from "../../app/services/workshop/mechanic";
 import MechanicTable from "../../components/workshop/mechanic-table";
 import SparePartsInput from "../../components/workshop/spare-parts-input";
 import CustomHeader from "../../core/custom-header";
@@ -10,8 +15,10 @@ const Mechanic = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
+  const [createMechanic] = useCreateMechanicMutation();
+  const [updateMechanic] = useUpdateMechanicMutation();
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     console.log(values);
     // Handle form submission logic here
     if (editingRecord) {
@@ -22,6 +29,14 @@ const Mechanic = () => {
       // Add a new record
       console.log("Adding new record");
       // Code for adding new record in the backend goes here
+      try {
+        console.log(values);
+        await createMechanic(values).unwrap();
+        toast.success("Mechanic activity created");
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to create mechanic activity");
+      }
     }
     setIsModalVisible(false);
     form.resetFields();
@@ -36,7 +51,7 @@ const Mechanic = () => {
 
   const openModalForEdit = (record) => {
     setEditingRecord(record);
-    form.setFieldsValue(record); // Populate the form with the record's data
+    form.setFieldsValue(record);
     setIsModalVisible(true);
   };
 
@@ -48,7 +63,7 @@ const Mechanic = () => {
           <Button
             type="primary"
             onClick={openModalForAdd}
-            className="bg-green-500 ml-3 text-white"
+            className="ml-3 text-white"
           >
             Add Mechanic Summary
           </Button>
@@ -65,7 +80,7 @@ const Mechanic = () => {
         title={
           editingRecord ? "Update Mechanic Summary" : "Add Mechanic Summary"
         }
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
