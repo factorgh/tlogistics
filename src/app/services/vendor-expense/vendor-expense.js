@@ -2,28 +2,28 @@ import { baseApi } from "../baseApi";
 import { crudService } from "../custom-crud-service";
 
 // Define the vendor endpoints using crudService
-export const customerApi = baseApi.injectEndpoints({
+export const vendorExpenseApi = baseApi.injectEndpoints({
     endpoints: (builder) => {
-        const vendorCrud = crudService("/vendor");
+        const vendorCrud = crudService("/vendor_expense");
 
         return {
-            createVendor: builder.mutation({
+            createVendorExpense: builder.mutation({
                 query: (vendorData) => vendorCrud.create(vendorData),
                 invalidatesTags: ["vendor"],
             }),
-            updateVendor: builder.mutation({
+            updateVendorExpense: builder.mutation({
                 query: ({ id, vendorData }) => vendorCrud.update({ id, data: vendorData }),
                 invalidatesTags: ["vendor"],
             }),
-            deleteVendor: builder.mutation({
+            deleteVendorExpense: builder.mutation({
                 query: (id) => vendorCrud.delete(id),
                 invalidatesTags: ["vendor"],
             }),
-            getVendors: builder.query({
+            getVendorsExpense: builder.query({
                 query: () => vendorCrud.getAll(),
                 providesTags: ["vendor"],
             }),
-            getSingleVendor: builder.query({
+            getSingleVendorExpense: builder.query({
                 query: (id) => vendorCrud.getSingle(id),
                 providesTags: ["vendor"],
             }),
@@ -32,9 +32,9 @@ export const customerApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useCreateVendorMutation,
-    useGetVendorsQuery,
-    useGetSingleVendorQuery,
-    useDeleteVendorMutation,
-    useUpdateVendorMutation,
-} = customerApi;
+    useCreateVendorExpenseMutation,
+    useDeleteVendorExpenseMutation,
+    useGetVendorsExpenseQuery,
+    useGetSingleVendorExpenseQuery,
+    useUpdateVendorExpenseMutation,
+} = vendorExpenseApi;
