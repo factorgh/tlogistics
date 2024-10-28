@@ -9,15 +9,58 @@ const Diesel = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
+  const [dataSource, setDataSource] = useState([
+    {
+      key: 1,
+      vehicleNo: "ABC 123",
+      date: "2024-10-01",
+      consumption: 50,
+      unitPrice: 10,
+      amount: "500.00",
+      pump: "pump1",
+      company: "Company A",
+      phoneNumber: "1234567890",
+      status: "Active",
+    },
+    {
+      key: 2,
+      vehicleNo: "XYZ 456",
+      date: "2024-10-05",
+      consumption: 30,
+      unitPrice: 10,
+      amount: "300.00",
+      pump: "pump2",
+      company: "Company B",
+      phoneNumber: "0987654321",
+      status: "Active",
+    },
+    {
+      key: 3,
+      vehicleNo: "LMN 789",
+      date: "2024-10-10",
+      consumption: 45,
+      unitPrice: 10,
+      amount: "450.00",
+      pump: "pump1",
+      company: "Company C",
+      phoneNumber: "1122334455",
+      status: "Inactive",
+    },
+  ]);
 
   // Handle form submission
   const handleSubmit = (values) => {
     if (isEditing) {
-      // Update logic here
+      // Update logic
+      setDataSource((prev) =>
+        prev.map((record) => (record.key === editRecord.key ? values : record))
+      );
       console.log("Updating entry:", values);
     } else {
-      // Create logic here
-      console.log("Creating new entry:", values);
+      // Create logic
+      const newRecord = { key: Date.now(), ...values }; // Use a unique key for each entry
+      setDataSource((prev) => [...prev, newRecord]);
+      console.log("Creating new entry:", newRecord);
     }
     // Close modal and reset form
     setIsModalVisible(false);
@@ -50,19 +93,11 @@ const Diesel = () => {
       <div className="flex items-center justify-between">
         <CustomHeader headerTitle={"Diesel"} />
         <div>
-          <h3 className="text-sm mb-3">
-            Stock In Hand: <span className="text-blue-500">120,000 LTS</span>
-            <Button type="primary" className="bg-green-500 text-white ml-3">
-              Monthly Report
-            </Button>
-          </h3>
+          <Button type="primary" onClick={handleAdd}>
+            Add Entry
+          </Button>
         </div>
       </div>
-
-      {/* Add/Edit Button */}
-      <Button type="primary" onClick={handleAdd}>
-        Add Entry
-      </Button>
 
       {/* Modal for Create/Update form */}
       <Modal
@@ -104,12 +139,12 @@ const Diesel = () => {
             </Form.Item>
           </div>
           <Divider />
-          <Button type="primary" htmlType="submit">
+          <Button className="w-full" type="primary" htmlType="submit">
             {isEditing ? "Update Entry" : "Add Entry"}
           </Button>
         </Form>
       </Modal>
-      <DieselTable />
+      <DieselTable dataSource={dataSource} handleEdit={handleEdit} />
     </CustomLayout>
   );
 };

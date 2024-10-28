@@ -1,67 +1,84 @@
-import { Divider, Form, Input, Select } from "antd";
+import { Button, Divider, Form, Input, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { useState } from "react";
 import TransportMcBerryTable from "../../components/transport/transport-mcberry";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
-import CustomModal from "../../core/custom_modal";
 
 const TransportMcBerry = () => {
   const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    // Handle form submission logic here
+    // For example: form.validateFields().then(values => console.log(values));
+    setIsModalVisible(false); // Close modal after submission
+  };
 
   return (
     <CustomLayout>
       <div className="flex items-center justify-between ">
         <CustomHeader headerTitle={"Transport McBerry"} />
-        <CustomModal
-          buttonTitle={"Add Transport McBerry"}
-          header="Add Transport McBerry"
-        >
-          <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
-            <div>
-              <Divider />
-              <div className="grid grid-cols-2 gap-3">
-                <Form.Item label="Vehicle Number" name={"vehicle number"}>
-                  <Input />
-                </Form.Item>
-                <Form.Item label="Vehicle Type" name={"vehicle type"}>
-                  <Input />
-                </Form.Item>
-                <Form.Item label="Driver Management">
-                  <Select>
-                    <Select.Option value="demo">Demo</Select.Option>
-                  </Select>
-                </Form.Item>
-
-                <Form.Item label="Truck Assisstant" name={"truck assisstant"}>
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  label="Registration Ex.Date"
-                  name={" registration expiry date"}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  label="Insurance Ex.Date"
-                  name={"insurance expiry date"}
-                >
-                  <Input />
-                </Form.Item>
-              </div>
-              <div>
-                <h5>Route Optimization</h5>
-                <TextArea rows={4} />
-              </div>
-            </div>
-            {/* Add Seperator here */}
-          </Form>
-        </CustomModal>
+        <Button type="primary" onClick={() => setIsModalVisible(true)}>
+          Add Transport McBerry
+        </Button>
       </div>
-      {/* Form section */}
 
+      {/* Ant Design Modal */}
+      <Modal
+        title="Add Transport McBerry"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null} // Set footer to null to use custom footer if needed
+      >
+        <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
+          <div>
+            <Divider />
+            <div className="grid grid-cols-2 gap-3">
+              <Form.Item label="Vehicle Number" name={"vehicle number"}>
+                <Input />
+              </Form.Item>
+              <Form.Item label="Vehicle Type" name={"vehicle type"}>
+                <Input />
+              </Form.Item>
+              <Form.Item label="Driver Management" name={"driver management"}>
+                <Select>
+                  <Select.Option value="demo">Demo</Select.Option>
+                  {/* Add more options as needed */}
+                </Select>
+              </Form.Item>
+
+              <Form.Item label="Truck Assistant" name={"truck assistant"}>
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                label="Registration Exp. Date"
+                name={"registration expiry date"}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Insurance Exp. Date"
+                name={"insurance expiry date"}
+              >
+                <Input />
+              </Form.Item>
+            </div>
+            <div>
+              <h5>Route Optimization</h5>
+              <TextArea rows={4} />
+            </div>
+          </div>
+          <div style={{ width: "100%" }}>
+            <Button className="w-full mt-3" type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </div>
+        </Form>
+      </Modal>
+
+      {/* Table Section */}
       <TransportMcBerryTable />
     </CustomLayout>
   );

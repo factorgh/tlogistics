@@ -11,7 +11,7 @@ const GeneralExpensesForm = () => {
       >
         <InputNumber
           style={{ width: "100%" }}
-          prefix="$"
+          prefix="GHC"
           placeholder="Enter total expense amount"
         />
       </Form.Item>
@@ -27,7 +27,7 @@ const GeneralExpensesForm = () => {
 
       {/* Save Button */}
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button className="w-full" type="primary" htmlType="submit">
           Save Expenses
         </Button>
       </Form.Item>

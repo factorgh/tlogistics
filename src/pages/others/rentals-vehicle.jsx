@@ -1,15 +1,39 @@
-import { Form, Input, Select } from "antd";
-import RentalTable from "../../components/others/financial-assets/rental-table";
+import { Button, Form, Input, Select } from "antd";
+import { useEffect, useState } from "react";
+import RentalTable from "../../components/others/financial-assets/rental-table"; // Assuming this is a custom table component
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
 import CustomModal from "../../core/custom_modal";
 
 const RentalsVehicle = () => {
   const [form] = Form.useForm();
+  const [rentalEntries, setRentalEntries] = useState([]); // State for rental vehicle entries
+
+  // Dummy data for initial rendering
+  useEffect(() => {
+    const dummyData = [
+      {
+        agentName: "Agent Smith",
+        leasingOptions: "Short Term",
+        vehicleType: "Truck",
+        driverName: "John Doe",
+      },
+      {
+        agentName: "Agent Johnson",
+        leasingOptions: "Long Term",
+        vehicleType: "Salon Car",
+        driverName: "Jane Doe",
+      },
+    ];
+    setRentalEntries(dummyData);
+  }, []);
 
   const onFinish = (values) => {
-    console.log("Form submitted with values:", values);
+    // Add new entry to the rentalEntries state
+    setRentalEntries([...rentalEntries, values]);
+    form.resetFields(); // Reset form fields after submission
   };
+
   return (
     <CustomLayout>
       <div className="flex items-center justify-between ">
@@ -68,12 +92,19 @@ const RentalsVehicle = () => {
             >
               <Input placeholder="Enter driver name" />
             </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
           </Form>
         </CustomModal>
       </div>
-      {/* ..... */}
-      <RentalTable />
-      {/* ..... */}
+
+      {/* Rental Table */}
+      <RentalTable dataSource={rentalEntries} />
+      {/* Assuming RentalTable accepts a dataSource prop for displaying entries */}
     </CustomLayout>
   );
 };

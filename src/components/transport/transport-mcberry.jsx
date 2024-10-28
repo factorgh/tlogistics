@@ -4,7 +4,43 @@ import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
 
-const data = [];
+const data = [
+  {
+    key: "1",
+    "Vehicle No.": "DL01HB1234",
+    "Vehicle Type": "Refrigerated Truck",
+    driver: "Sam Green",
+    truck: "McBerry Truck A",
+  },
+  {
+    key: "2",
+    "Vehicle No.": "DL01XC5678",
+    "Vehicle Type": "LCV",
+    driver: "Lisa White",
+    truck: "McBerry Truck B",
+  },
+  {
+    key: "3",
+    "Vehicle No.": "DL02EF9101",
+    "Vehicle Type": "28Ft Open Truck",
+    driver: "Daniel Black",
+    truck: "McBerry Truck C",
+  },
+  {
+    key: "4",
+    "Vehicle No.": "DL02GH2345",
+    "Vehicle Type": "Refrigerated Truck",
+    driver: "Sophia Blue",
+    truck: "McBerry Truck D",
+  },
+  {
+    key: "5",
+    "Vehicle No.": "DL02JK6789",
+    "Vehicle Type": "LCV",
+    driver: "Max Grey",
+    truck: "McBerry Truck E",
+  },
+];
 
 const TransportMcBerryTable = () => {
   const [searchText, setSearchText] = useState("");

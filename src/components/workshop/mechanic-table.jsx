@@ -4,7 +4,37 @@ import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
 
-const data = [];
+// Professional dummy data for the table
+const data = [
+  {
+    key: "1",
+    "Vehicle No.": "AB1234CD",
+    "Vehicle Type": "Truck",
+    driver: "John Doe",
+    truck: "FreightMaster 3000",
+  },
+  {
+    key: "2",
+    "Vehicle No.": "EF5678GH",
+    "Vehicle Type": "Van",
+    driver: "Jane Smith",
+    truck: "CargoMax 250",
+  },
+  {
+    key: "3",
+    "Vehicle No.": "IJ9101KL",
+    "Vehicle Type": "Truck",
+    driver: "Sam Brown",
+    truck: "HeavyHauler 500",
+  },
+  {
+    key: "4",
+    "Vehicle No.": "MN2345OP",
+    "Vehicle Type": "SUV",
+    driver: "Emma Green",
+    truck: "UrbanCourier X",
+  },
+];
 
 const MechanicTable = () => {
   const [searchText, setSearchText] = useState("");
@@ -102,9 +132,9 @@ const MechanicTable = () => {
     {
       title: "Vehicle No.",
       dataIndex: "Vehicle No.",
-      key: "Vehcle No.",
+      key: "Vehicle No.",
       width: 100,
-      ...getColumnSearchProps("Vehcle No."),
+      ...getColumnSearchProps("Vehicle No."),
     },
     {
       title: "Vehicle Type",
@@ -120,17 +150,15 @@ const MechanicTable = () => {
       width: 100,
       ...getColumnSearchProps("driver"),
     },
-
     {
       title: "Truck Ass.",
       dataIndex: "truck",
       key: "truck",
       width: 200,
       ...getColumnSearchProps("truck"),
-      sorter: (a, b) => a.location.length - b.location.length,
+      sorter: (a, b) => a.truck.length - b.truck.length,
       sortDirections: ["descend", "ascend"],
     },
-
     {
       title: "Action",
       dataIndex: "",
@@ -142,7 +170,6 @@ const MechanicTable = () => {
         </a>
       ),
     },
-    // Add more columns as needed
   ];
 
   return (

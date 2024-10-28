@@ -1,33 +1,16 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
+import { Edit } from "lucide-react";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdTrash } from "react-icons/io";
+import { useGetTransportsQuery } from "../../app/services/transport/mcberry-transport";
 
-// Sample data for demonstration
-const data = [
-  {
-    key: "1",
-    purchaseId: "PUR-001",
-    itemName: "Engine Oil",
-    supplier: "Auto Supplies Ltd.",
-    purchaseDate: "2024-10-12",
-    amount: "GHC 200",
-  },
-  {
-    key: "2",
-    purchaseId: "PUR-002",
-    itemName: "Brake Pads",
-    supplier: "Brake Solutions Co.",
-    purchaseDate: "2024-09-25",
-    amount: "GHC 150",
-  },
-];
-
-const PurchaseTable = () => {
+const TransportPrivateCarsTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const { data } = useGetTransportsQuery();
+  console.log(data);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -76,6 +59,17 @@ const PurchaseTable = () => {
           >
             Reset
           </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({ closeDropdown: false });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
           <Button type="link" size="small" onClick={() => close()}>
             Close
           </Button>
@@ -87,6 +81,11 @@ const PurchaseTable = () => {
     ),
     onFilter: (value, record) =>
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
@@ -102,41 +101,37 @@ const PurchaseTable = () => {
 
   const columns = [
     {
-      title: "Purchase ID",
-      dataIndex: "purchaseId",
-      key: "purchaseId",
-      width: 120,
-      ...getColumnSearchProps("purchaseId"),
-    },
-    {
-      title: "Item Name",
-      dataIndex: "itemName",
-      key: "itemName",
-      width: 150,
-      ...getColumnSearchProps("itemName"),
-    },
-    {
-      title: "Supplier",
-      dataIndex: "supplier",
-      key: "supplier",
-      width: 200,
-      ...getColumnSearchProps("supplier"),
-    },
-    {
-      title: "Purchase Date",
-      dataIndex: "purchaseDate",
-      key: "purchaseDate",
-      width: 130,
-      sorter: (a, b) => new Date(a.purchaseDate) - new Date(b.purchaseDate),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
+      title: "Vehicle No.",
+      dataIndex: "Vehicle No.",
+      key: "Vehcle No.",
       width: 100,
-      sorter: (a, b) =>
-        parseFloat(a.amount.slice(1)) - parseFloat(b.amount.slice(1)),
+      ...getColumnSearchProps("Vehcle No."),
     },
+    {
+      title: "Vehicle Type",
+      dataIndex: "Vehicle Type",
+      key: "Vehicle Type",
+      width: 100,
+      ...getColumnSearchProps("Vehicle Type"),
+    },
+    {
+      title: "Driver",
+      dataIndex: "driver",
+      key: "driver",
+      width: 100,
+      ...getColumnSearchProps("driver"),
+    },
+
+    {
+      title: "Truck Ass.",
+      dataIndex: "truck",
+      key: "truck",
+      width: 200,
+      ...getColumnSearchProps("truck"),
+      sorter: (a, b) => a.location.length - b.location.length,
+      sortDirections: ["descend", "ascend"],
+    },
+
     {
       title: "Action",
       dataIndex: "",
@@ -144,20 +139,21 @@ const PurchaseTable = () => {
       width: 100,
       render: () => (
         <a>
-          <IoMdTrash color="red" />
+          <Edit color="red" />
         </a>
       ),
     },
+    // Add more columns as needed
   ];
 
   return (
     <Table
       columns={columns}
       dataSource={data}
-      scroll={{ x: 1000 }}
+      scroll={{ x: 1000 }} // Enable horizontal scrolling
       className="border border-slate-200 rounded-md"
     />
   );
 };
 
-export default PurchaseTable;
+export default TransportPrivateCarsTable;

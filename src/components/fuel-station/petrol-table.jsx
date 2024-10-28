@@ -1,12 +1,13 @@
+/* eslint-disable react/prop-types */
 import { Table } from "antd";
-const PetrolTable = () => {
-  const dataSource = [];
+import { MdEdit } from "react-icons/md";
 
+const PetrolTable = ({ dataSource, handleEdit }) => {
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Vehicle No.",
+      dataIndex: "vehicleNo",
+      key: "vehicleNo",
     },
     {
       title: "Date",
@@ -14,22 +15,56 @@ const PetrolTable = () => {
       key: "date",
     },
     {
+      title: "Consumption (Lts)",
+      dataIndex: "consumption",
+      key: "consumption",
+    },
+    {
+      title: "Unit Price",
+      dataIndex: "unitPrice",
+      key: "unitPrice",
+    },
+    {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
+    },
+    {
+      title: "Pump",
+      dataIndex: "pump",
+      key: "pump",
+    },
+    {
+      title: "Company",
+      dataIndex: "company",
+      key: "company",
+    },
+    {
+      title: "Phone Number",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
     },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <MdEdit
+          onClick={() => () => {
+            console.log(record);
+          }}
+        >
+          Edit
+        </MdEdit>
+      ),
+    },
   ];
 
-  return (
-    <div>
-      <Table className="" dataSource={dataSource} columns={columns} />
-    </div>
-  );
+  return <Table dataSource={dataSource} columns={columns} />;
 };
 
 export default PetrolTable;

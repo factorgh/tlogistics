@@ -1,12 +1,11 @@
+/* eslint-disable react/prop-types */
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdEyeOff } from "react-icons/io";
+import { MdEdit } from "react-icons/md";
 
-const data = [];
-
-const RentalTable = () => {
+const RentalTable = ({ dataSource, onEdit }) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -100,61 +99,53 @@ const RentalTable = () => {
 
   const columns = [
     {
-      title: "#",
-      dataIndex: "#",
-      key: "#",
-      width: 150,
-      ...getColumnSearchProps("#"),
-    },
-    {
       title: "Agent Name",
-      dataIndex: "agent name",
-      key: "agent name",
+      dataIndex: "agentName",
+      key: "agentName",
       width: 150,
-      ...getColumnSearchProps("from"),
+      ...getColumnSearchProps("agentName"),
     },
     {
       title: "Leasing Options",
-      dataIndex: "leasing options",
-      key: "leasing options",
+      dataIndex: "leasingOptions",
+      key: "leasingOptions",
       width: 150,
-      ...getColumnSearchProps("leasing options"),
+      ...getColumnSearchProps("leasingOptions"),
     },
     {
       title: "Vehicle Type",
-      dataIndex: "vehicle type",
-      key: "vehicle type",
+      dataIndex: "vehicleType",
+      key: "vehicleType",
       width: 150,
-      ...getColumnSearchProps("vehicle type"),
+      ...getColumnSearchProps("vehicleType"),
     },
     {
       title: "Driver Name",
-      dataIndex: "driver name",
-      key: "driver name",
+      dataIndex: "driverName",
+      key: "driverName",
       width: 150,
-      ...getColumnSearchProps("driver name"),
+      ...getColumnSearchProps("driverName"),
     },
-
     {
       title: "Action",
       dataIndex: "",
       key: "action",
       width: 100,
-      render: () => (
-        <a>
-          <IoMdEyeOff />
+      render: (text, record) => (
+        <a onClick={() => console.log(record)}>
+          <MdEdit />
         </a>
       ),
     },
-    // Add more columns as needed
   ];
 
   return (
     <Table
       columns={columns}
-      dataSource={data}
+      dataSource={dataSource}
       scroll={{ x: 1000 }} // Enable horizontal scrolling
-      className="border border-slate-200  rounded-md"
+      className="border border-slate-200 rounded-md"
+      rowKey="agentName" // Use a unique key for each row
     />
   );
 };

@@ -9,7 +9,7 @@ const SignUpPage = () => {
       </div>
       <div className="flex-0.5 bg-red-500 w-full h-full">
         <img
-          src="/images/banner.jpg"
+          src="/images/banner-main.jpeg"
           alt="random"
           className="w-full h-full object-cover"
         />

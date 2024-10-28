@@ -4,7 +4,43 @@ import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
 
-const data = [];
+const data = [
+  {
+    key: "1",
+    from: "Accra",
+    to: "Kumasi",
+    lcv: "1200",
+    truck: "2800",
+  },
+  {
+    key: "2",
+    from: "City C",
+    to: "City D",
+    lcv: "1300",
+    truck: "2900",
+  },
+  {
+    key: "3",
+    from: "City E",
+    to: "City F",
+    lcv: "1250",
+    truck: "2750",
+  },
+  {
+    key: "4",
+    from: "City G",
+    to: "City H",
+    lcv: "1350",
+    truck: "3000",
+  },
+  {
+    key: "5",
+    from: "City I",
+    to: "City J",
+    lcv: "1400",
+    truck: "3100",
+  },
+];
 
 const PriceListTable = () => {
   const [searchText, setSearchText] = useState("");

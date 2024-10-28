@@ -118,8 +118,8 @@ const InsuranceForm = () => {
 
       {/* Submit Button */}
       <Form.Item>
-        <div className="w-48">
-          <Button type="primary" htmlType="submit" block>
+        <div className="">
+          <Button className="w-full" type="primary" htmlType="submit" block>
             Submit
           </Button>
         </div>

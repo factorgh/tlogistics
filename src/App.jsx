@@ -22,6 +22,7 @@ import Insurance from "./pages/others/insurance.jsx";
 import RentalsVehicle from "./pages/others/rentals-vehicle.jsx";
 import VehicleRegistration from "./pages/others/vehicle-registration.jsx";
 import PriceList from "./pages/price-list.jsx";
+import ShipmentDetailPage from "./pages/shipment-detail.jsx";
 import Shipment from "./pages/shipment.jsx";
 import SignUpPage from "./pages/sign-up.jsx";
 import SingleStaff from "./pages/single-staff.jsx";
@@ -52,6 +53,7 @@ function App() {
               <Route path="create-quote" element={<CreateQuote />} />
               <Route path="list-quotes" element={<ListQoutes />} />
               <Route path="shipment-list" element={<Shipment />} />
+              <Route path="shipment-detail" element={<ShipmentDetailPage />} />
               <Route path="price-list" element={<PriceList />} />
               <Route path="vendor-list" element={<VendorsList />} />
               <Route path="vendor-expenses" element={<VendorExpenses />} />

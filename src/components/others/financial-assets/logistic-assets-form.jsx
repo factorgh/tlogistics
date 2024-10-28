@@ -27,7 +27,7 @@ const LogisticAssetsForm = () => {
 
       {/* Save Button */}
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button className="w-full" type="primary" htmlType="submit">
           Save Asset
         </Button>
       </Form.Item>

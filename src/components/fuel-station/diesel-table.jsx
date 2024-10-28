@@ -1,12 +1,13 @@
+/* eslint-disable react/prop-types */
 import { Table } from "antd";
-const DieselTable = () => {
-  const dataSource = [];
+import { MdEdit } from "react-icons/md";
 
+const DieselTable = ({ dataSource, handleEdit }) => {
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Vehicle No.",
+      dataIndex: "vehicleNo",
+      key: "vehicleNo",
     },
     {
       title: "Date",
@@ -14,20 +15,45 @@ const DieselTable = () => {
       key: "date",
     },
     {
+      title: "Consumption (Lts)",
+      dataIndex: "consumption",
+      key: "consumption",
+    },
+    {
+      title: "Unit Price",
+      dataIndex: "unitPrice",
+      key: "unitPrice",
+    },
+    {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
+      title: "Pump",
+      dataIndex: "pump",
+      key: "pump",
+    },
+    {
+      title: "Company",
+      dataIndex: "company",
+      key: "company",
+    },
+    {
+      title: "Phone Number",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => <MdEdit onClick={() => console.log(record)} />,
     },
   ];
 
   return (
     <div>
-      <Table className="" dataSource={dataSource} columns={columns} />
+      <Table dataSource={dataSource} columns={columns} />
     </div>
   );
 };

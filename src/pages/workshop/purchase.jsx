@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, Modal } from "antd";
+import { Button, DatePicker, Divider, Form, Input, Modal, Select } from "antd";
 import { useState } from "react";
 import PurchaseTable from "../../components/workshop/purchase-table";
 import SparePartsCost from "../../components/workshop/spare-parts-cost";
@@ -45,9 +45,19 @@ const Purchase = () => {
             <SparePartsCost />
             <WorkingToolsCost />
           </div>
+          <div className="grid grid-cols-2 gap-5">
+            <Form.Item label="Select Supplier" name="position">
+              <Select defaultValue="AC Mall 2">
+                <Select.Option value="AC Mall">AC Mall 1</Select.Option>
+              </Select>
+              <Form.Item className="mt-5" label="Select Date" name="date">
+                <DatePicker />
+              </Form.Item>
+            </Form.Item>
+          </div>
 
           {/* Scrub section */}
-          <div className="mt-5 flex justify-between items-center">
+          <div className=" flex justify-between items-center">
             <h2>Scrub Cost</h2>
             <div className="mt-5">
               <Form.Item name={"scrub cost"}>
@@ -61,7 +71,7 @@ const Purchase = () => {
           <Divider orientation="left" />
 
           <Form.Item>
-            <Button className="w-32" type="primary" htmlType="submit">
+            <Button className="w-full px-10" type="primary" htmlType="submit">
               Submit
             </Button>
           </Form.Item>

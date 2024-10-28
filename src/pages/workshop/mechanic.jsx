@@ -2,10 +2,7 @@ import { Button, Divider, Form, Input, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import {
-  useCreateMechanicMutation,
-  useUpdateMechanicMutation,
-} from "../../app/services/workshop/mechanic";
+import { useCreateMechanicMutation } from "../../app/services/workshop/mechanic";
 import MechanicTable from "../../components/workshop/mechanic-table";
 import SparePartsInput from "../../components/workshop/spare-parts-input";
 import CustomHeader from "../../core/custom-header";
@@ -16,7 +13,6 @@ const Mechanic = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [createMechanic] = useCreateMechanicMutation();
-  const [updateMechanic] = useUpdateMechanicMutation();
 
   const handleSubmit = async (values) => {
     console.log(values);
@@ -172,7 +168,7 @@ const Mechanic = () => {
               </Form.Item>
             </div>
           </div>
-          <Button type="primary" htmlType="submit">
+          <Button className="w-full px-5" type="primary" htmlType="submit">
             {editingRecord ? "Update" : "Submit"}
           </Button>
         </Form>

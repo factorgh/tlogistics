@@ -36,7 +36,7 @@ const TransitAndDemurrageForm = () => {
       >
         <InputNumber
           style={{ width: "100%" }}
-          prefix="$"
+          prefix="GHC"
           placeholder="Enter charge per hour"
         />
       </Form.Item>
@@ -49,7 +49,7 @@ const TransitAndDemurrageForm = () => {
       >
         <InputNumber
           style={{ width: "100%" }}
-          prefix="$"
+          prefix="GHC"
           placeholder="Total demurrage charge"
           disabled
         />
@@ -57,7 +57,7 @@ const TransitAndDemurrageForm = () => {
 
       {/* Save Button */}
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button className="w-full" type="primary" htmlType="submit">
           Save Demurrage Details
         </Button>
       </Form.Item>
