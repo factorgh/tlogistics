@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { CloseOutlined } from "@ant-design/icons";
 import { Button, Input, List, Select } from "antd";
 import { useEffect, useState } from "react";
