@@ -1,7 +1,6 @@
 import {
   AiFillDashboard,
   AiFillPayCircle,
-  AiOutlineOrderedList,
   AiOutlineSafety,
   AiOutlineUnorderedList,
   AiOutlineUsergroupAdd,
@@ -60,11 +59,6 @@ const sideContent3 = [
     label: "Shipment List",
     path: "/main/shipment-list",
     icon: <AiOutlineSafety size={20} />,
-  },
-  {
-    label: "Price List",
-    path: "/main/price-list",
-    icon: <AiOutlineOrderedList size={20} />,
   },
 ];
 const sideContent4 = [

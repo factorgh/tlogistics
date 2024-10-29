@@ -14,7 +14,7 @@ const SparePartsInput = ({ onSparePartsChange }) => {
         type: prefix,
         name: sparePart,
       };
-      setSparePartsList([...sparePartsList, newPart]);
+      setSparePartsList((prev) => [...prev, newPart]);
       setSparePart("");
     }
   };
@@ -33,8 +33,6 @@ const SparePartsInput = ({ onSparePartsChange }) => {
   return (
     <div className="mb-5">
       <h5>Spare parts (In/Out)</h5>
-
-      {/* Input and select fields */}
       <div style={{ display: "flex", marginBottom: 16 }}>
         <Select
           defaultValue="in"
@@ -59,7 +57,6 @@ const SparePartsInput = ({ onSparePartsChange }) => {
         </Button>
       </div>
 
-      {/* List of added spare parts */}
       <List
         bordered
         dataSource={sparePartsList}

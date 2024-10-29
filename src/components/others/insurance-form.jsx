@@ -1,11 +1,15 @@
+/* eslint-disable react/prop-types */
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Form, Input, InputNumber } from "antd";
+import { Button, DatePicker, Form, Input, InputNumber, Spin } from "antd";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { useCreateInsuranceMutation } from "../../app/services/insurance/insurance";
 
-const InsuranceForm = () => {
+const InsuranceForm = ({ onSubmit }) => {
   const [claims, setClaims] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [refunds, setRefunds] = useState([]);
+  const [createInusrance, { isLoading }] = useCreateInsuranceMutation();
 
   const addClaim = () => {
     setClaims([...claims, { id: claims.length, description: "", amount: 0 }]);
@@ -37,13 +41,29 @@ const InsuranceForm = () => {
     setRefunds(newRefunds);
   };
 
+  const handleFinishEvent = async (values) => {
+    const formattedValues = {
+      insurer: values.insurer,
+
+      start_date: values.start_date.$d,
+      end_date: values.end_date.$d,
+      claims,
+      invoices,
+      refunds,
+    };
+    console.log("Formatted Form Values:", formattedValues);
+    try {
+      await createInusrance(formattedValues).unwrap();
+      toast.success("Insurance created successfully");
+      onSubmit();
+    } catch (error) {
+      toast.error(error.data.message);
+      onSubmit();
+    }
+  };
+
   return (
-    <Form
-      layout="vertical"
-      onFinish={(values) =>
-        console.log("Form Values:", { ...values, claims, invoices, refunds })
-      }
-    >
+    <Form layout="vertical" onFinish={handleFinishEvent}>
       {/* Vehicle Insurance */}
       <Form.Item
         label="Vehicle Insurance Number"
@@ -68,24 +88,14 @@ const InsuranceForm = () => {
       <Form.Item
         label="Start Date"
         name="start_date"
-        rules={[
-          {
-            required: true,
-            message: "Please select the start date!",
-          },
-        ]}
+        rules={[{ required: true, message: "Please select the start date!" }]}
       >
         <DatePicker style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         label="End Date"
         name="end_date"
-        rules={[
-          {
-            required: true,
-            message: "Please select the expiry date!",
-          },
-        ]}
+        rules={[{ required: true, message: "Please select the expiry date!" }]}
       >
         <DatePicker style={{ width: "100%" }} />
       </Form.Item>
@@ -221,9 +231,15 @@ const InsuranceForm = () => {
 
       {/* Submit Button */}
       <Form.Item>
-        <Button type="primary" htmlType="submit" block>
-          Submit
-        </Button>
+        {isLoading ? (
+          <Button className="w-full" htmlType="submit">
+            <Spin />
+          </Button>
+        ) : (
+          <Button className="w-full" type="primary" htmlType="submit">
+            Submit
+          </Button>
+        )}
       </Form.Item>
     </Form>
   );

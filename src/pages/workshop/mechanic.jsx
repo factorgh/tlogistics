@@ -12,22 +12,24 @@ const Mechanic = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
+  const [spareParts, setSpareParts] = useState([]); // State to hold spare parts
   const [createMechanic] = useCreateMechanicMutation();
 
+  const handleSparePartsChange = (newSpareParts) => {
+    setSpareParts(newSpareParts); // Update spare parts state
+  };
+
   const handleSubmit = async (values) => {
-    console.log(values);
+    const mechanicData = { ...values, spare_part: spareParts }; // Include spare parts in submission
+    console.log(mechanicData);
     // Handle form submission logic here
     if (editingRecord) {
-      // Update the record
       console.log("Updating record:", editingRecord.id);
       // Code for updating record in the backend goes here
     } else {
-      // Add a new record
       console.log("Adding new record");
-      // Code for adding new record in the backend goes here
       try {
-        console.log(values);
-        await createMechanic(values).unwrap();
+        await createMechanic(mechanicData).unwrap();
         toast.success("Mechanic activity created");
       } catch (error) {
         console.log(error);
@@ -42,6 +44,7 @@ const Mechanic = () => {
   const openModalForAdd = () => {
     setEditingRecord(null);
     form.resetFields();
+    setSpareParts([]); // Reset spare parts when opening modal
     setIsModalVisible(true);
   };
 
@@ -129,14 +132,14 @@ const Mechanic = () => {
               <Input />
             </Form.Item>
           </div>
-          <SparePartsInput />
+          <SparePartsInput onSparePartsChange={handleSparePartsChange} />{" "}
+          {/* Pass the handler function */}
           <Form.Item label="Overhaul/Repair" name={"repair_and_overhaul"}>
             <Select>
               <Select.Option value="repair">Repair</Select.Option>
               <Select.Option value="overhaul">Overhaul</Select.Option>
             </Select>
           </Form.Item>
-
           <div>
             <h5 className="mb-3">Daily Report </h5>
             <Form.Item

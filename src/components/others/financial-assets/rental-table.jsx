@@ -1,14 +1,16 @@
-/* eslint-disable react/prop-types */
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { MdEdit } from "react-icons/md";
+import { useGetRentalsQuery } from "../../../app/services/rental/rental";
 
-const RentalTable = ({ dataSource, onEdit }) => {
+const RentalTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const { data: rentalData, isLoading: rentalIsLoading } = useGetRentalsQuery();
+  console.log(rentalData?.vehicleRental);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -100,31 +102,31 @@ const RentalTable = ({ dataSource, onEdit }) => {
   const columns = [
     {
       title: "Agent Name",
-      dataIndex: "agentName",
-      key: "agentName",
+      dataIndex: "agent_name",
+      key: "agent_name",
       width: 150,
-      ...getColumnSearchProps("agentName"),
+      ...getColumnSearchProps("agent_name"),
     },
     {
       title: "Leasing Options",
-      dataIndex: "leasingOptions",
-      key: "leasingOptions",
+      dataIndex: "leasing",
+      key: "leasing",
       width: 150,
       ...getColumnSearchProps("leasingOptions"),
     },
     {
       title: "Vehicle Type",
-      dataIndex: "vehicleType",
-      key: "vehicleType",
+      dataIndex: "vehicle_type",
+      key: "vehicle_type",
       width: 150,
-      ...getColumnSearchProps("vehicleType"),
+      ...getColumnSearchProps("vehicle_type"),
     },
     {
       title: "Driver Name",
-      dataIndex: "driverName",
-      key: "driverName",
+      dataIndex: "driver_name",
+      key: "driver_name",
       width: 150,
-      ...getColumnSearchProps("driverName"),
+      ...getColumnSearchProps("driver_name"),
     },
     {
       title: "Action",
@@ -141,11 +143,13 @@ const RentalTable = ({ dataSource, onEdit }) => {
 
   return (
     <Table
+      loading={rentalIsLoading}
+      pagination={true}
       columns={columns}
-      dataSource={dataSource}
-      scroll={{ x: 1000 }} // Enable horizontal scrolling
+      dataSource={rentalData?.vehicleRental}
+      scroll={{ x: 1000 }}
       className="border border-slate-200 rounded-md"
-      rowKey="agentName" // Use a unique key for each row
+      rowKey="agentName"
     />
   );
 };
