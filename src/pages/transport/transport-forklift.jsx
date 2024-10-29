@@ -1,31 +1,16 @@
 import { Button, Divider, Form, Input, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
-import { toast } from "react-toastify";
-import { useCreateTransportMutation } from "../../app/services/transport/transport";
 import TransportBeverageTable from "../../components/transport/transport-beverage";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
 
-const TransportBeverage = () => {
+const TransportForklift = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [createTransportBeverage] = useCreateTransportMutation();
 
-  const handleSubmit = async (values) => {
-    console.log(values);
-    const formattedValues = {
-      ...values,
-      trasnport_type: "BEVERAGE",
-    };
-    console.log(formattedValues);
-    try {
-      await createTransportBeverage(formattedValues).unwrap();
-      form.resetFields();
-      toast.success("Transport Beverage Created Successfully");
-    } catch (error) {
-      toast.error(error.data.message);
-    }
+  const handleSubmit = () => {
+    // Handle form submission logic
     setIsModalVisible(false); // Close modal after submission
   };
 
@@ -43,38 +28,45 @@ const TransportBeverage = () => {
         title="Add Transport Beverages"
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
-        footer={null} // Set footer to null to use custom footer if needed
+        footer={null}
       >
         <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
           <div>
             <Divider />
             <div className="grid grid-cols-2 gap-3">
+              <Form.Item
+                defaultValue="BEVERAGE"
+                label="Transport Type"
+                name={"transport_type"}
+              >
+                <Input disabled />
+              </Form.Item>
               <Form.Item label="Vehicle Number" name={"vehicle number"}>
                 <Input />
               </Form.Item>
-              <Form.Item label="Vehicle Type" name={"vehicle_type"}>
+              <Form.Item label="Vehicle Type" name={"vehicle type"}>
                 <Input />
               </Form.Item>
-              <Form.Item label="Driver Management" name={"driver_management"}>
+              <Form.Item label="Driver Management" name={"driver management"}>
                 <Select>
                   <Select.Option value="demo">Demo</Select.Option>
                   {/* Add more options as needed */}
                 </Select>
               </Form.Item>
 
-              <Form.Item label="Truck Assistant" name={"truck_assistant"}>
+              <Form.Item label="Truck Assistant" name={"truck assistant"}>
                 <Input />
               </Form.Item>
 
               <Form.Item
                 label="Registration Exp. Date"
-                name={"registration_expiring_date"}
+                name={"registration expiry date"}
               >
                 <Input />
               </Form.Item>
               <Form.Item
                 label="Insurance Exp. Date"
-                name={"insurance_expiring_date"}
+                name={"insurance expiry date"}
               >
                 <Input />
               </Form.Item>
@@ -98,4 +90,4 @@ const TransportBeverage = () => {
   );
 };
 
-export default TransportBeverage;
+export default TransportForklift;

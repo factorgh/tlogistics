@@ -1,5 +1,16 @@
-import { Button, DatePicker, Divider, Form, Input, Modal, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Spin,
+} from "antd";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { useCreateFuelStationMutation } from "../../app/services/fuel-station/fuel-station";
 import PetrolTable from "../../components/fuel-station/petrol-table";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
@@ -9,6 +20,7 @@ const Petrol = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
+  const [createPetrol, { isLoading }] = useCreateFuelStationMutation();
 
   // Sample data source
   const [dataSource, setDataSource] = useState([
@@ -50,20 +62,31 @@ const Petrol = () => {
     },
   ]);
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     const amount = values.consumption * values.unitPrice; // Calculate amount
     const newRecord = {
       key: isEditing ? editRecord.key : dataSource.length + 1, // Assign a unique key
-      vehicleNo: values.vehicleNo,
+      vehicle_number: values.vehicleNo,
       date: values.date.format("YYYY-MM-DD"), // Format date for display
       consumption: values.consumption,
-      unitPrice: values.unitPrice,
-      amount: amount.toFixed(2), // Keep two decimal places
-      pump: values.pump, // Include pump in the record
-      company: values.company, // Include company in the record
-      phoneNumber: values.phoneNumber, // Include phone number in the record
-      status: "Active", // Default status
+      unit_price: values.unitPrice,
+      amount: amount.toFixed(2),
+      pump: values.pump,
+      company: values.company,
+      phone: values.phoneNumber,
+      status: "Active",
+      type: "PETROL",
     };
+    // const {
+    //   vehicle_number,
+    //   date,
+    //   consumption,
+    //   unit_price,
+    //   amount,
+    //   pump,
+    //   company,
+    //   phone,
+    // } = newRecord;
 
     if (isEditing) {
       // Update logic
@@ -73,8 +96,15 @@ const Petrol = () => {
         )
       );
     } else {
-      // Create logic
-      setDataSource([...dataSource, newRecord]);
+      // Create petrol entity
+      try {
+        await createPetrol(newRecord);
+        console.log(newRecord); // Create logic
+        toast.success("Petrol entry created successfully");
+        // setDataSource([...dataSource, newRecord]);
+      } catch (error) {
+        toast.error(error?.data?.message);
+      }
     }
 
     // Close modal and reset form
@@ -91,7 +121,7 @@ const Petrol = () => {
   const handleEdit = (record) => {
     setIsEditing(true);
     setEditRecord(record);
-    form.setFieldsValue(record); // Populate form with record data
+    form.setFieldsValue(record);
     setIsModalVisible(true);
   };
 
@@ -177,9 +207,15 @@ const Petrol = () => {
               </Form.Item>
             </div>
             <Divider />
-            <Button className="w-full" type="primary" htmlType="submit">
-              {isEditing ? "Update Entry" : "Add Entry"}
-            </Button>
+            {isLoading ? (
+              <Button className="w-full" htmlType="submit">
+                <Spin />
+              </Button>
+            ) : (
+              <Button className="w-full" type="primary" htmlType="submit">
+                {isEditing ? "Update Entry" : "Add Entry"}
+              </Button>
+            )}
           </Form>
         </Modal>
       </div>

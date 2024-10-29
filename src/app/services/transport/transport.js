@@ -51,7 +51,7 @@ export const customerApi = baseApi.injectEndpoints({
 
 export const {
   useCreateTransportMutation,
-  useGetTransportsQuery,
+  useGetBeverageTransportsQuery,
   useGetSingleTransportQuery,
   useDeleteTransportMutation,
   useUpdateTransportMutation,

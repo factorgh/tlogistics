@@ -1,6 +1,7 @@
 import { Button, Modal, Table } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { useGetInsurancesQuery } from "../../app/services/insurance/insurance";
 import InsuranceForm from "../../components/others/insurance-form";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
@@ -8,6 +9,7 @@ import CustomLayout from "../../core/custom-layout";
 const Insurance = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [insuranceEntries, setInsuranceEntries] = useState([]);
+  const { data, isFetching } = useGetInsurancesQuery();
 
   // Function to show modal
   const showModal = () => {
@@ -29,40 +31,42 @@ const Insurance = () => {
   // Table columns
   const columns = [
     {
-      title: "Insurance Number",
-      dataIndex: "insuranceNumber",
-      key: "insuranceNumber",
-    },
-    {
       title: "Insurer",
       dataIndex: "insurer",
       key: "insurer",
     },
     {
-      title: "Insurance Period",
-      dataIndex: "insurancePeriod",
-      key: "insurancePeriod",
-      render: (period) =>
-        `${period[0].format("YYYY-MM-DD")} - ${period[1].format("YYYY-MM-DD")}`,
+      title: "Start Date",
+      dataIndex: "start_date",
+      key: "start_date",
+      render: (date) => moment(date).format("YYYY-MM-DD"),
+    },
+    {
+      title: "End Date",
+      dataIndex: "end_date",
+      key: "end_date",
+      render: (date) => moment(date).format("YYYY-MM-DD"),
     },
     {
       title: "Claims",
       dataIndex: "claims",
       key: "claims",
-      render: (claims) => claims.map((claim) => claim.description).join(", "),
+      render: (claims) =>
+        claims?.map((claim) => claim.description).join(", ") || "No Claims",
     },
     {
       title: "Invoices",
       dataIndex: "invoices",
       key: "invoices",
       render: (invoices) =>
-        invoices.map((invoice) => invoice.number).join(", "),
+        invoices?.map((invoice) => invoice.number).join(", ") || "No Invoices",
     },
     {
       title: "Refunds",
       dataIndex: "refunds",
       key: "refunds",
-      render: (refunds) => refunds.map((refund) => refund.chequeNo).join(", "),
+      render: (refunds) =>
+        refunds?.map((refund) => refund.chequeNo).join(", ") || "No Refunds",
     },
   ];
 
@@ -72,7 +76,8 @@ const Insurance = () => {
       {
         insuranceNumber: "INS12345",
         insurer: "Insurer A",
-        insurancePeriod: [moment("2023-01-01"), moment("2024-01-01")],
+        start_date: moment("2023-01-01"),
+        end_date: moment("2024-01-01"),
         claims: [{ description: "Claim A1" }, { description: "Claim A2" }],
         invoices: [{ number: "INV001" }, { number: "INV002" }],
         refunds: [{ chequeNo: "CHEQ001" }],
@@ -80,7 +85,8 @@ const Insurance = () => {
       {
         insuranceNumber: "INS12346",
         insurer: "Insurer B",
-        insurancePeriod: [moment("2023-06-01"), moment("2024-06-01")],
+        start_date: moment("2023-06-01"),
+        end_date: moment("2024-06-01"),
         claims: [{ description: "Claim B1" }],
         invoices: [{ number: "INV003" }],
         refunds: [],
@@ -88,7 +94,8 @@ const Insurance = () => {
       {
         insuranceNumber: "INS12347",
         insurer: "Insurer C",
-        insurancePeriod: [moment("2022-12-01"), moment("2023-12-01")],
+        start_date: moment("2022-12-01"),
+        end_date: moment("2023-12-01"),
         claims: [{ description: "Claim C1" }, { description: "Claim C2" }],
         invoices: [{ number: "INV004" }, { number: "INV005" }],
         refunds: [{ chequeNo: "CHEQ002" }],
@@ -96,7 +103,8 @@ const Insurance = () => {
       {
         insuranceNumber: "INS12348",
         insurer: "Insurer D",
-        insurancePeriod: [moment("2023-03-01"), moment("2024-03-01")],
+        start_date: moment("2023-03-01"),
+        end_date: moment("2024-03-01"),
         claims: [],
         invoices: [{ number: "INV006" }],
         refunds: [{ chequeNo: "CHEQ003" }],
@@ -104,15 +112,17 @@ const Insurance = () => {
       {
         insuranceNumber: "INS12349",
         insurer: "Insurer E",
-        insurancePeriod: [moment("2023-08-01"), moment("2024-08-01")],
+        start_date: moment("2023-08-01"),
+        end_date: moment("2024-08-01"),
         claims: [{ description: "Claim E1" }],
         invoices: [],
         refunds: [{ chequeNo: "CHEQ004" }],
       },
     ];
 
-    setInsuranceEntries(dummyData);
-  }, []);
+    // Use dummy data if data is not available
+    setInsuranceEntries(data?.insurances || dummyData);
+  }, [data]);
 
   return (
     <CustomLayout>
@@ -124,7 +134,7 @@ const Insurance = () => {
 
         <Modal
           title="Insurance Form"
-          visible={isModalVisible}
+          open={isModalVisible}
           onCancel={handleCancel}
           footer={null}
         >
@@ -132,9 +142,9 @@ const Insurance = () => {
         </Modal>
       </div>
       <Table
-        dataSource={insuranceEntries}
+        loading={isFetching}
+        dataSource={insuranceEntries} // Use the state here
         columns={columns}
-        rowKey={(record) => record.insuranceNumber}
         style={{ marginTop: "20px" }}
       />
     </CustomLayout>
