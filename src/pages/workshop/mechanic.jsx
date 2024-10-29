@@ -85,7 +85,7 @@ const Mechanic = () => {
           <div className="grid grid-cols-2 gap-3">
             <Form.Item
               label="Vehicle Maintenance"
-              name={"vehicleMaintenance"}
+              name={"vehicle_maintenance"}
               rules={[
                 { required: true, message: "Please enter vehicle maintenance" },
               ]}
@@ -95,7 +95,7 @@ const Mechanic = () => {
 
             <Form.Item
               label="Truck Assistant"
-              name={"truckAssistant"}
+              name={"truck_assistance"}
               rules={[
                 { required: true, message: "Please enter truck assistant" },
               ]}
@@ -105,7 +105,7 @@ const Mechanic = () => {
 
             <Form.Item
               label="Registration Expiry Date"
-              name={"registrationExpiryDate"}
+              name={"reg_expiry_Date"}
               rules={[
                 {
                   required: true,
@@ -118,7 +118,7 @@ const Mechanic = () => {
 
             <Form.Item
               label="Insurance Expiry Date"
-              name={"insuranceExpiryDate"}
+              name={"insurance_expiry_date"}
               rules={[
                 {
                   required: true,
@@ -130,18 +130,32 @@ const Mechanic = () => {
             </Form.Item>
           </div>
           <SparePartsInput />
-          <Form.Item label="Overhaul/Repair" name={"overhaulRepair"}>
+          <Form.Item label="Overhaul/Repair" name={"repair_and_overhaul"}>
             <Select>
               <Select.Option value="repair">Repair</Select.Option>
               <Select.Option value="overhaul">Overhaul</Select.Option>
             </Select>
           </Form.Item>
 
+          <div>
+            <h5 className="mb-3">Daily Report </h5>
+            <Form.Item
+              name={"daily_report"}
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter daily report",
+                },
+              ]}
+            >
+              <TextArea rows={4} />
+            </Form.Item>
+          </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <div>
               <h5 className="mb-3">Diagnostic Services</h5>
               <Form.Item
-                name={"diagnosticServices"}
+                name={"diagnostic_services"}
                 rules={[
                   {
                     required: true,
@@ -156,7 +170,7 @@ const Mechanic = () => {
             <div>
               <h5 className="mb-3">Breakdown Response Team</h5>
               <Form.Item
-                name={"breakdownResponseTeam"}
+                name={"break_down_response"}
                 rules={[
                   {
                     required: true,

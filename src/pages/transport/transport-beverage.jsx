@@ -34,6 +34,13 @@ const TransportBeverage = () => {
           <div>
             <Divider />
             <div className="grid grid-cols-2 gap-3">
+              <Form.Item
+                defaultValue="BEVERAGE"
+                label="Transport Type"
+                name={"transport_type"}
+              >
+                <Input disabled />
+              </Form.Item>
               <Form.Item label="Vehicle Number" name={"vehicle number"}>
                 <Input />
               </Form.Item>

@@ -1,11 +1,16 @@
-import { Button, Modal, Table } from "antd";
+import { Button, Modal, Table, Tabs } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { useGetGeneralExpensesQuery } from "../../app/services/financial-assets/general-expense";
+import { useGetLogisticsQuery } from "../../app/services/financial-assets/logistics";
+import { useGetTransitsQuery } from "../../app/services/financial-assets/transit";
 import GeneralExpensesForm from "../../components/others/financial-assets/general-expenses-form";
 import LogisticAssetsForm from "../../components/others/financial-assets/logistic-assets-form";
 import TransitAndDemurrageForm from "../../components/others/financial-assets/transit-demurrage-form";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
+
+const { TabPane } = Tabs;
 
 const FinancialAssets = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -13,20 +18,25 @@ const FinancialAssets = () => {
   const [logisticEntries, setLogisticEntries] = useState([]);
   const [transitEntries, setTransitEntries] = useState([]);
   const [generalEntries, setGeneralEntries] = useState([]);
+  const { data: logistics, isFetching } = useGetLogisticsQuery();
+  const { data: expenses, isFetching: isFetchingExpenses } =
+    useGetGeneralExpensesQuery();
+  const { data: transit, isFetching: isFetchingTransit } =
+    useGetTransitsQuery();
+  console.log(logistics?.logistics);
+  console.log(expenses);
+  console.log(transit);
 
-  // Function to show modal
   const showModal = (type) => {
     setFormType(type);
     setIsModalVisible(true);
   };
 
-  // Function to handle modal cancel
   const handleCancel = () => {
     setIsModalVisible(false);
     setFormType(null);
   };
 
-  // Handle form submission
   const handleFormSubmit = (entry) => {
     switch (formType) {
       case "logistic":
@@ -44,57 +54,44 @@ const FinancialAssets = () => {
     setIsModalVisible(false);
   };
 
-  // Table columns
   const logisticColumns = [
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: "Asset Type",
+      dataIndex: "asset_type",
+      key: "asset_type",
     },
     {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      render: (date) => date.format("YYYY-MM-DD"),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
+      title: "details",
+      dataIndex: "details",
+      key: "details",
     },
   ];
 
   const transitColumns = [
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: "Job",
+      dataIndex: "job",
+      key: "job",
     },
     {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      render: (date) => date.format("YYYY-MM-DD"),
+      title: "Delay Hours",
+      dataIndex: "delay_in_hour",
+      key: "delay_in_hour",
     },
     {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
+      title: "Charge per hour",
+      dataIndex: "charge_per_hour",
+      key: "charge_per_hour",
     },
   ];
 
   const generalColumns = [
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: "Police Cases & Accidents",
+      dataIndex: "police_and_accident",
+      key: "police_and_accident",
     },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      render: (date) => date.format("YYYY-MM-DD"),
-    },
+
     {
       title: "Amount",
       dataIndex: "amount",
@@ -102,7 +99,6 @@ const FinancialAssets = () => {
     },
   ];
 
-  // Dummy data for initial rendering
   useEffect(() => {
     const dummyLogisticData = [
       {
@@ -116,20 +112,14 @@ const FinancialAssets = () => {
         amount: 5000,
       },
     ];
-
     const dummyTransitData = [
       {
         description: "Container Detention",
         date: moment("2023-02-20"),
         amount: 1500,
       },
-      {
-        description: "Port Fees",
-        date: moment("2023-05-15"),
-        amount: 700,
-      },
+      { description: "Port Fees", date: moment("2023-05-15"), amount: 700 },
     ];
-
     const dummyGeneralData = [
       {
         description: "Office Supplies",
@@ -159,43 +149,54 @@ const FinancialAssets = () => {
   return (
     <CustomLayout>
       <CustomHeader headerTitle="Financial Assets" />
-      <div className="flex flex-col gap-4"></div>
-      <div className="flex justify-between items-center mt-5">
-        <h3 className="text-lg font-bold mt-5">Logistics Assets</h3>{" "}
-        <Button type="primary" onClick={() => showModal("logistic")}>
-          Add Logistic Asset
-        </Button>
-      </div>
-      <Table
-        dataSource={logisticEntries}
-        columns={logisticColumns}
-        rowKey={(record) => record.description} // Assuming description is unique
-        style={{ marginTop: "20px" }}
-      />
-      <div className="flex justify-between items-center mt-5">
-        <h3 className="text-lg font-bold mt-5">Transit & Demurrage</h3>{" "}
-        <Button type="primary" onClick={() => showModal("transit")}>
-          Add Transit & Demurrage
-        </Button>
-      </div>
-      <Table
-        dataSource={transitEntries}
-        columns={transitColumns}
-        rowKey={(record) => record.description} // Assuming description is unique
-        style={{ marginTop: "20px" }}
-      />
-      <div className="flex justify-between items-center mt-5">
-        <h3 className="text-lg font-bold mt-5">General Expenses</h3>
-        <Button type="primary" onClick={() => showModal("general")}>
-          Add General Expense
-        </Button>
-      </div>
-      <Table
-        dataSource={generalEntries}
-        columns={generalColumns}
-        rowKey={(record) => record.description} // Assuming description is unique
-        style={{ marginTop: "20px" }}
-      />
+      <Tabs defaultActiveKey="1">
+        <TabPane tab="Logistics Assets" key="1">
+          <div className="flex justify-between items-center mt-5">
+            <h3 className="text-lg font-bold mt-5">Logistics Assets</h3>
+            <Button type="primary" onClick={() => showModal("logistic")}>
+              Add Logistic Asset
+            </Button>
+          </div>
+          <Table
+            loading={isFetching}
+            dataSource={logistics?.logistics}
+            columns={logisticColumns}
+            rowKey={(record) => record.description}
+            style={{ marginTop: "20px" }}
+          />
+        </TabPane>
+        <TabPane tab="Transit & Demurrage" key="2">
+          <div className="flex justify-between items-center mt-5">
+            <h3 className="text-lg font-bold mt-5">Transit & Demurrage</h3>
+            <Button type="primary" onClick={() => showModal("transit")}>
+              Add Transit & Demurrage
+            </Button>
+          </div>
+          <Table
+            loading={isFetchingTransit}
+            dataSource={transit?.transit}
+            columns={transitColumns}
+            rowKey={(record) => record.description}
+            style={{ marginTop: "20px" }}
+          />
+        </TabPane>
+        <TabPane tab="General Expenses" key="3">
+          <div className="flex justify-between items-center mt-5">
+            <h3 className="text-lg font-bold mt-5">General Expenses</h3>
+            <Button type="primary" onClick={() => showModal("general")}>
+              Add General Expense
+            </Button>
+          </div>
+          <Table
+            loading={isFetchingExpenses}
+            dataSource={expenses?.generalExpenses}
+            columns={generalColumns}
+            rowKey={(record) => record.description}
+            style={{ marginTop: "20px" }}
+          />
+        </TabPane>
+      </Tabs>
+
       <Modal
         title={`${
           formType === "logistic"

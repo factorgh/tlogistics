@@ -14,7 +14,6 @@ const TransportPrivateCars = () => {
   const [isForkliftModalVisible, setIsForkliftModalVisible] = useState(false);
 
   const handleSubmitPrivateCars = () => {
-    // Handle form submission logic for Transport Private Cars
     setIsPrivateCarsModalVisible(false); // Close modal after submission
   };
 

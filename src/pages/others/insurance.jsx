@@ -22,6 +22,7 @@ const Insurance = () => {
   // Handle form submission
   const handleFormSubmit = (entry) => {
     setInsuranceEntries([...insuranceEntries, entry]);
+    console.log("Insurance entry submitted:", entry);
     setIsModalVisible(false);
   };
 

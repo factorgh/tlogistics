@@ -1,15 +1,18 @@
 import { CloseOutlined } from "@ant-design/icons";
 import { Button, Input, List, Select } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const SparePartsInput = () => {
+const SparePartsInput = ({ onSparePartsChange }) => {
   const [sparePart, setSparePart] = useState("");
   const [prefix, setPrefix] = useState("in");
   const [sparePartsList, setSparePartsList] = useState([]);
 
   const addSparePart = () => {
     if (sparePart.trim()) {
-      const newPart = `Spare parts/${prefix} - ${sparePart}`;
+      const newPart = {
+        type: prefix,
+        name: sparePart,
+      };
       setSparePartsList([...sparePartsList, newPart]);
       setSparePart("");
     }
@@ -20,6 +23,11 @@ const SparePartsInput = () => {
     const updatedList = sparePartsList.filter((_, i) => i !== index);
     setSparePartsList(updatedList);
   };
+
+  // Effect to forward spare parts to parent component
+  useEffect(() => {
+    onSparePartsChange(sparePartsList);
+  }, [sparePartsList, onSparePartsChange]);
 
   return (
     <div className="mb-5">
@@ -63,7 +71,7 @@ const SparePartsInput = () => {
               />,
             ]}
           >
-            {item}
+            {`${item.type} - ${item.name}`}
           </List.Item>
         )}
       />

@@ -4,7 +4,7 @@ import { crudService } from "../custom-crud-service";
 // Define the Transport endpoints using crudService
 export const customerApi = baseApi.injectEndpoints({
   endpoints: (builder) => {
-    const transportCrud = crudService("/transport/private");
+    const transportCrud = crudService("/transport");
 
     return {
       createTransport: builder.mutation({
@@ -17,11 +17,28 @@ export const customerApi = baseApi.injectEndpoints({
         invalidatesTags: ["transport"],
       }),
       deleteTransport: builder.mutation({
-        query: (id) => transportCrud.delete({ id }),
+        query: (id) => transportCrud.delete(id),
         invalidatesTags: ["transport"],
       }),
-      getTransports: builder.query({
-        query: () => transportCrud.getAll(),
+      getPrivateTransports: builder.query({
+        query: () => ({
+          url: "/transport/private",
+          method: "GET",
+        }),
+        providesTags: ["transport"],
+      }),
+      getMcBerryTransports: builder.query({
+        query: () => ({
+          url: "/transport/private",
+          method: "GET",
+        }),
+        providesTags: ["transport"],
+      }),
+      getBeverageTransports: builder.query({
+        query: () => ({
+          url: "/transport/private",
+          method: "GET",
+        }),
         providesTags: ["transport"],
       }),
       getSingleTransport: builder.query({
@@ -32,10 +49,9 @@ export const customerApi = baseApi.injectEndpoints({
   },
 });
 
-// Export hooks for usage in functional components
 export const {
   useCreateTransportMutation,
-  useGetTransportsQuery, // Query for getting private transports
+  useGetTransportsQuery,
   useGetSingleTransportQuery,
   useDeleteTransportMutation,
   useUpdateTransportMutation,

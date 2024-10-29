@@ -2,32 +2,47 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Form, Input, InputNumber } from "antd";
 import { useState } from "react";
 
-const { RangePicker } = DatePicker;
-
 const InsuranceForm = () => {
   const [claims, setClaims] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [refunds, setRefunds] = useState([]);
 
-  // Add claim management
   const addClaim = () => {
     setClaims([...claims, { id: claims.length, description: "", amount: 0 }]);
   };
 
-  // Add invoice management
   const addInvoice = () => {
     setInvoices([...invoices, { id: invoices.length, number: "", amount: 0 }]);
   };
 
-  // Add refund management
   const addRefund = () => {
     setRefunds([...refunds, { id: refunds.length, chequeNo: "", amount: 0 }]);
+  };
+
+  const handleClaimChange = (index, field, value) => {
+    const newClaims = [...claims];
+    newClaims[index][field] = value;
+    setClaims(newClaims);
+  };
+
+  const handleInvoiceChange = (index, field, value) => {
+    const newInvoices = [...invoices];
+    newInvoices[index][field] = value;
+    setInvoices(newInvoices);
+  };
+
+  const handleRefundChange = (index, field, value) => {
+    const newRefunds = [...refunds];
+    newRefunds[index][field] = value;
+    setRefunds(newRefunds);
   };
 
   return (
     <Form
       layout="vertical"
-      onFinish={(values) => console.log("Form Values:", values)}
+      onFinish={(values) =>
+        console.log("Form Values:", { ...values, claims, invoices, refunds })
+      }
     >
       {/* Vehicle Insurance */}
       <Form.Item
@@ -51,16 +66,28 @@ const InsuranceForm = () => {
 
       {/* Starting & Expiry Date */}
       <Form.Item
-        label="Insurance Period"
-        name="insurancePeriod"
+        label="Start Date"
+        name="start_date"
         rules={[
           {
             required: true,
-            message: "Please select the start and expiry date!",
+            message: "Please select the start date!",
           },
         ]}
       >
-        <RangePicker style={{ width: "100%" }} />
+        <DatePicker style={{ width: "100%" }} />
+      </Form.Item>
+      <Form.Item
+        label="End Date"
+        name="end_date"
+        rules={[
+          {
+            required: true,
+            message: "Please select the expiry date!",
+          },
+        ]}
+      >
+        <DatePicker style={{ width: "100%" }} />
       </Form.Item>
 
       {/* Claims & Accident Tracker Management */}
@@ -73,8 +100,32 @@ const InsuranceForm = () => {
             key={index}
             style={{ display: "flex", gap: "10px", marginTop: "10px" }}
           >
-            <Input placeholder="Claim Description" style={{ flex: 2 }} />
-            <InputNumber placeholder="Amount" style={{ flex: 1 }} />
+            <Form.Item
+              style={{ flex: 2 }}
+              name={`claimDescription${index}`}
+              rules={[
+                { required: true, message: "Please enter a description!" },
+              ]}
+            >
+              <Input
+                placeholder="Claim Description"
+                value={claim.description}
+                onChange={(e) =>
+                  handleClaimChange(index, "description", e.target.value)
+                }
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ flex: 1 }}
+              name={`claimAmount${index}`}
+              rules={[{ required: true, message: "Please enter an amount!" }]}
+            >
+              <InputNumber
+                placeholder="Amount"
+                value={claim.amount}
+                onChange={(value) => handleClaimChange(index, "amount", value)}
+              />
+            </Form.Item>
           </div>
         ))}
       </Form.Item>
@@ -94,8 +145,34 @@ const InsuranceForm = () => {
             key={index}
             style={{ display: "flex", gap: "10px", marginTop: "10px" }}
           >
-            <Input placeholder="Invoice Number" style={{ flex: 1 }} />
-            <InputNumber placeholder="Amount" style={{ flex: 1 }} />
+            <Form.Item
+              style={{ flex: 1 }}
+              name={`invoiceNumber${index}`}
+              rules={[
+                { required: true, message: "Please enter the invoice number!" },
+              ]}
+            >
+              <Input
+                placeholder="Invoice Number"
+                value={invoice.number}
+                onChange={(e) =>
+                  handleInvoiceChange(index, "number", e.target.value)
+                }
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ flex: 1 }}
+              name={`invoiceAmount${index}`}
+              rules={[{ required: true, message: "Please enter an amount!" }]}
+            >
+              <InputNumber
+                placeholder="Amount"
+                value={invoice.amount}
+                onChange={(value) =>
+                  handleInvoiceChange(index, "amount", value)
+                }
+              />
+            </Form.Item>
           </div>
         ))}
       </Form.Item>
@@ -110,19 +187,43 @@ const InsuranceForm = () => {
             key={index}
             style={{ display: "flex", gap: "10px", marginTop: "10px" }}
           >
-            <Input placeholder="Cheque Number" style={{ flex: 1 }} />
-            <InputNumber placeholder="Refund Amount" style={{ flex: 1 }} />
+            <Form.Item
+              style={{ flex: 1 }}
+              name={`refundCheque${index}`}
+              rules={[
+                { required: true, message: "Please enter a cheque number!" },
+              ]}
+            >
+              <Input
+                placeholder="Cheque Number"
+                value={refund.chequeNo}
+                onChange={(e) =>
+                  handleRefundChange(index, "chequeNo", e.target.value)
+                }
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ flex: 1 }}
+              name={`refundAmount${index}`}
+              rules={[
+                { required: true, message: "Please enter a refund amount!" },
+              ]}
+            >
+              <InputNumber
+                placeholder="Refund Amount"
+                value={refund.amount}
+                onChange={(value) => handleRefundChange(index, "amount", value)}
+              />
+            </Form.Item>
           </div>
         ))}
       </Form.Item>
 
       {/* Submit Button */}
       <Form.Item>
-        <div className="">
-          <Button className="w-full" type="primary" htmlType="submit" block>
-            Submit
-          </Button>
-        </div>
+        <Button type="primary" htmlType="submit" block>
+          Submit
+        </Button>
       </Form.Item>
     </Form>
   );

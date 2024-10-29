@@ -1,11 +1,28 @@
 import { Button, DatePicker, Divider, Form, Input, Radio, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useCreateShipmentMutation } from "../../app/services/shipment/shipment";
 
 const CreateShipmentForm = () => {
   const [form] = Form.useForm();
   const [createShipment, { isLoading }] = useCreateShipmentMutation();
+  const [packages, setPackages] = useState([{}]); // Initialize with one empty package
+
+  const handlePackageChange = (index, key, value) => {
+    const newPackages = [...packages];
+    newPackages[index] = { ...newPackages[index], [key]: value };
+    setPackages(newPackages);
+  };
+
+  const handleAddPackage = () => {
+    setPackages([...packages, {}]); // Add a new empty package
+  };
+
+  const handleRemovePackage = (index) => {
+    const newPackages = packages.filter((_, i) => i !== index);
+    setPackages(newPackages);
+  };
 
   const handleSubmit = async (values) => {
     console.log(values);
@@ -16,15 +33,27 @@ const CreateShipmentForm = () => {
       delivery_time: values.delivery_time
         ? values.delivery_time.toISOString()
         : null,
+      packages: packages.map((pkg) => ({
+        package_type: pkg.package_type,
+        size: pkg.size,
+        weight: pkg.weight,
+        quantity: pkg.quantity,
+        invoice_number: pkg.invoice_number,
+        declared_value: pkg.declared_value,
+        description: pkg.description,
+      })),
     };
 
     console.log(transformedValues);
 
     try {
       await createShipment(transformedValues).unwrap();
+      toast.success("Shipment created successfully");
+      form.resetFields();
+      setPackages([{}]);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to create shipment ");
+      toast.error("Failed to create shipment");
     }
   };
 
@@ -65,15 +94,6 @@ const CreateShipmentForm = () => {
             </Form.Item>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 items-center gap-5">
-            <div>
-              <h5 className="mb-3">Pickup Address</h5>
-              <Form.Item name="pickupAddress">
-                <TextArea rows={4} placeholder="Address" />
-              </Form.Item>
-            </div>
-          </div>
-
           <h5>Transport Details</h5>
           <div className="grid grid-cols-4 gap-3">
             <Form.Item name="driver_name" label="Driver Name">
@@ -86,6 +106,8 @@ const CreateShipmentForm = () => {
               <Input placeholder="Vehicle Number" />
             </Form.Item>
           </div>
+
+          <Divider />
 
           <h5>Vendor Details</h5>
           <div className="grid grid-cols-5 gap-3">
@@ -108,9 +130,9 @@ const CreateShipmentForm = () => {
               <Input type="number" />
             </Form.Item>
           </div>
-
           <Divider />
 
+          {/* Package Pickup Location, Transport Details, Vendor Details, etc. */}
           <div className="grid grid-cols-6 gap-3">
             <Form.Item name="charge_transportation" label="Transportation">
               <Input type="number" />
@@ -145,20 +167,83 @@ const CreateShipmentForm = () => {
 
           {/* New Section for Shipment Package Details */}
           <h5>Shipment Package Details</h5>
-          <div className="grid grid-cols-4 gap-3">
-            <Form.Item name="package_type" label="Package Type">
-              <Input placeholder="Package Type" />
-            </Form.Item>
-            <Form.Item name="package_dimensions" label="Dimensions (LxWxH)">
-              <Input placeholder="e.g., 10x10x10 cm" />
-            </Form.Item>
-            <Form.Item name="package_weight" label="Weight (kg)">
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item name="package_quantity" label="Quantity">
-              <Input type="number" />
-            </Form.Item>
-          </div>
+          {packages.map((pkg, index) => (
+            <div key={index} className="grid grid-cols-4 gap-3 mb-4">
+              <Form.Item>
+                <Input
+                  value={pkg.package_type}
+                  placeholder="Package Type"
+                  onChange={(e) =>
+                    handlePackageChange(index, "package_type", e.target.value)
+                  }
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  value={pkg.size}
+                  placeholder="e.g., 10x10x10 cm"
+                  onChange={(e) =>
+                    handlePackageChange(index, "size", e.target.value)
+                  }
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  type="number"
+                  value={pkg.weight}
+                  placeholder="Weight (kg)"
+                  onChange={(e) =>
+                    handlePackageChange(index, "weight", e.target.value)
+                  }
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  type="number"
+                  value={pkg.quantity}
+                  placeholder="Quantity"
+                  onChange={(e) =>
+                    handlePackageChange(index, "quantity", e.target.value)
+                  }
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  type="number"
+                  value={pkg.invoice_number}
+                  placeholder="Invoice Number"
+                  onChange={(e) =>
+                    handlePackageChange(index, "invoice_number", e.target.value)
+                  }
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  type="number"
+                  value={pkg.declared_value}
+                  placeholder="Declared Value"
+                  onChange={(e) =>
+                    handlePackageChange(index, "declared_value", e.target.value)
+                  }
+                />
+              </Form.Item>
+              <Form.Item>
+                <Input
+                  value={pkg.description}
+                  placeholder="Description"
+                  onChange={(e) =>
+                    handlePackageChange(index, "description", e.target.value)
+                  }
+                />
+              </Form.Item>
+              <Button onClick={() => handleRemovePackage(index)} danger>
+                Remove Package
+              </Button>
+            </div>
+          ))}
+          <Button onClick={handleAddPackage} type="dashed">
+            Add Package
+          </Button>
           {/* End of New Section */}
 
           <Divider />

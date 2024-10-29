@@ -4,70 +4,72 @@ import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { useGetShipmentsQuery } from "../../app/services/shipment/shipment";
 
-const data = [
-  {
-    key: "1",
-    "tracking number": "MB123456789",
-    date: "2024-10-01",
-    name: "John Doe",
-    from: "New York, NY",
-    to: "Los Angeles, CA",
-    "current location": "Kansas City, MO",
-    status: "In Transit",
-    payment: "Paid",
-  },
-  {
-    key: "2",
-    "tracking number": "MB987654321",
-    date: "2024-10-02",
-    name: "Jane Smith",
-    from: "Chicago, IL",
-    to: "Houston, TX",
-    "current location": "St. Louis, MO",
-    status: "In Transit",
-    payment: "Unpaid",
-  },
-  {
-    key: "3",
-    "tracking number": "MB555888333",
-    date: "2024-10-03",
-    name: "Michael Johnson",
-    from: "Miami, FL",
-    to: "Seattle, WA",
-    "current location": "Denver, CO",
-    status: "Delayed",
-    payment: "Paid",
-  },
-  {
-    key: "4",
-    "tracking number": "MB666777999",
-    date: "2024-10-04",
-    name: "Emily Davis",
-    from: "Atlanta, GA",
-    to: "San Francisco, CA",
-    "current location": "Phoenix, AZ",
-    status: "Delivered",
-    payment: "Paid",
-  },
-  {
-    key: "5",
-    "tracking number": "MB444555666",
-    date: "2024-10-05",
-    name: "Chris Brown",
-    from: "Dallas, TX",
-    to: "Portland, OR",
-    "current location": "Salt Lake City, UT",
-    status: "Out for Delivery",
-    payment: "Paid",
-  },
-];
+// const data = [
+//   {
+//     key: "1",
+//     "tracking number": "MB123456789",
+//     date: "2024-10-01",
+//     name: "John Doe",
+//     from: "New York, NY",
+//     to: "Los Angeles, CA",
+//     "current location": "Kansas City, MO",
+//     status: "In Transit",
+//     payment: "Paid",
+//   },
+//   {
+//     key: "2",
+//     "tracking number": "MB987654321",
+//     date: "2024-10-02",
+//     name: "Jane Smith",
+//     from: "Chicago, IL",
+//     to: "Houston, TX",
+//     "current location": "St. Louis, MO",
+//     status: "In Transit",
+//     payment: "Unpaid",
+//   },
+//   {
+//     key: "3",
+//     "tracking number": "MB555888333",
+//     date: "2024-10-03",
+//     name: "Michael Johnson",
+//     from: "Miami, FL",
+//     to: "Seattle, WA",
+//     "current location": "Denver, CO",
+//     status: "Delayed",
+//     payment: "Paid",
+//   },
+//   {
+//     key: "4",
+//     "tracking number": "MB666777999",
+//     date: "2024-10-04",
+//     name: "Emily Davis",
+//     from: "Atlanta, GA",
+//     to: "San Francisco, CA",
+//     "current location": "Phoenix, AZ",
+//     status: "Delivered",
+//     payment: "Paid",
+//   },
+//   {
+//     key: "5",
+//     "tracking number": "MB444555666",
+//     date: "2024-10-05",
+//     name: "Chris Brown",
+//     from: "Dallas, TX",
+//     to: "Portland, OR",
+//     "current location": "Salt Lake City, UT",
+//     status: "Out for Delivery",
+//     payment: "Paid",
+//   },
+// ];
 
 const ShipmentListTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const navigate = useNavigate();
+  const { data } = useGetShipmentsQuery();
 
   const goToShipmentDetail = () => {
     navigate("/main/shipment-detail", { state: { shipment } });
@@ -239,7 +241,7 @@ const ShipmentListTable = () => {
   return (
     <Table
       columns={columns}
-      dataSource={data}
+      dataSource={data.shipments}
       scroll={{ x: 1000 }} // Enable horizontal scrolling
       className="border border-slate-200 rounded-md"
     />

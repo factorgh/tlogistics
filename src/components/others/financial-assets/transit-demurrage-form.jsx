@@ -1,10 +1,31 @@
-import { Button, Form, Input, InputNumber } from "antd";
+/* eslint-disable react/prop-types */
+import { Button, Form, Input, InputNumber, Spin } from "antd";
+import { useForm } from "antd/es/form/Form";
+import { toast } from "react-toastify";
+import { useCreateTransitMutation } from "../../../app/services/financial-assets/transit";
 
-const TransitAndDemurrageForm = () => {
+const TransitAndDemurrageForm = ({ onSubmit }) => {
+  const form = useForm();
+
+  const [createTransit, { isLoading }] = useCreateTransitMutation();
+
+  const handleFormSubmit = async (values) => {
+    try {
+      await createTransit(values).unwrap();
+      toast.success("Transit created successfully");
+
+      onSubmit();
+      form.resetFields();
+    } catch (error) {
+      toast.error(error.data.message);
+      onSubmit();
+    }
+  };
+
   return (
-    <Form layout="vertical" onFinish={(values) => console.log(values)}>
+    <Form layout="vertical" onFinish={handleFormSubmit}>
       {/* Job Details */}
-      <Form.Item label="Job ID" name="jobId" rules={[{ required: true }]}>
+      <Form.Item label="Job ID" name="job" rules={[{ required: true }]}>
         <Input placeholder="Enter Job ID" />
       </Form.Item>
 
@@ -20,7 +41,7 @@ const TransitAndDemurrageForm = () => {
       {/* Delay and Demurrage Charges */}
       <Form.Item
         label="Delay in Hours"
-        name="delayHours"
+        name="delay_in_hour"
         rules={[{ required: true }]}
       >
         <InputNumber
@@ -31,7 +52,7 @@ const TransitAndDemurrageForm = () => {
 
       <Form.Item
         label="Demurrage Charge per Hour"
-        name="demurrageCharge"
+        name="charge_per_hour"
         rules={[{ required: true }]}
       >
         <InputNumber
@@ -42,7 +63,7 @@ const TransitAndDemurrageForm = () => {
       </Form.Item>
 
       {/* Total Charges */}
-      <Form.Item
+      {/* <Form.Item
         label="Total Demurrage Charge"
         name="totalDemurrageCharge"
         rules={[{ required: true }]}
@@ -53,13 +74,19 @@ const TransitAndDemurrageForm = () => {
           placeholder="Total demurrage charge"
           disabled
         />
-      </Form.Item>
+      </Form.Item> */}
 
       {/* Save Button */}
       <Form.Item>
-        <Button className="w-full" type="primary" htmlType="submit">
-          Save Demurrage Details
-        </Button>
+        {isLoading ? (
+          <Button className="w-full" htmlType="submit" disabled>
+            <Spin />
+          </Button>
+        ) : (
+          <Button type="primary" className="w-full" htmlType="submit">
+            Save Demurrage Details
+          </Button>
+        )}
       </Form.Item>
     </Form>
   );
