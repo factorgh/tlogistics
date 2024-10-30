@@ -14,7 +14,7 @@ const VendorExpenses = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data } = useGetVendorsQuery();
-  const [createVendorExpense, { isLoading, isSuccess, isError, error, reset }] =
+  const [createVendorExpense, { isSuccess, isError, error, reset }] =
     useCreateVendorExpenseMutation();
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
