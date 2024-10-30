@@ -20,8 +20,25 @@ export const FuelStationApi = baseApi.injectEndpoints({
         query: (id) => FuelStationCrud.delete(id),
         invalidatesTags: ["fuel_station"],
       }),
-      getFuelStations: builder.query({
-        query: () => FuelStationCrud.getAll(),
+      getPetrolStations: builder.query({
+        query: () => ({
+          url: "/fuel_station/petrol",
+          method: "GET",
+        }),
+        providesTags: ["fuel_station"],
+      }),
+      getDieselStations: builder.query({
+        query: () => ({
+          url: "/fuel_station/diesel",
+          method: "GET",
+        }),
+        providesTags: ["fuel_station"],
+      }),
+      getGasStations: builder.query({
+        query: () => ({
+          url: "/fuel_station/gas",
+          method: "GET",
+        }),
         providesTags: ["fuel_station"],
       }),
       getSingleFuelStation: builder.query({
@@ -37,6 +54,8 @@ export const {
   useCreateFuelStationMutation,
   useUpdateFuelStationMutation,
   useDeleteFuelStationMutation,
-  useGetFuelStationsQuery,
+  useGetGasStationsQuery,
+  useGetPetrolStationsQuery,
+  useGetDieselStationsQuery,
   useGetSingleFuelStationQuery,
 } = FuelStationApi;

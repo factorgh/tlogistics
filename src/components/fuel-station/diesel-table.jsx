@@ -1,18 +1,23 @@
-/* eslint-disable react/prop-types */
 import { Table } from "antd";
+import moment from "moment";
 import { MdEdit } from "react-icons/md";
+import { useGetDieselStationsQuery } from "../../app/services/fuel-station/fuel-station";
 
-const DieselTable = ({ dataSource, handleEdit }) => {
+const DieselTable = () => {
+  const { data, isFetching } = useGetDieselStationsQuery();
   const columns = [
     {
       title: "Vehicle No.",
-      dataIndex: "vehicleNo",
-      key: "vehicleNo",
+      dataIndex: "vehicle_number",
+      key: "vehicle_number",
     },
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
+      render: (text) => {
+        return moment(text).format("YYYY-MM-DD");
+      },
     },
     {
       title: "Consumption (Lts)",
@@ -21,8 +26,8 @@ const DieselTable = ({ dataSource, handleEdit }) => {
     },
     {
       title: "Unit Price",
-      dataIndex: "unitPrice",
-      key: "unitPrice",
+      dataIndex: "unit_price",
+      key: "unit_price",
     },
     {
       title: "Amount",
@@ -41,8 +46,8 @@ const DieselTable = ({ dataSource, handleEdit }) => {
     },
     {
       title: "Phone Number",
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
       title: "Action",
@@ -53,7 +58,11 @@ const DieselTable = ({ dataSource, handleEdit }) => {
 
   return (
     <div>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table
+        loading={isFetching}
+        dataSource={data?.stations}
+        columns={columns}
+      />
     </div>
   );
 };

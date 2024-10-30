@@ -27,20 +27,21 @@ export const customerApi = baseApi.injectEndpoints({
         }),
         providesTags: ["transport"],
       }),
-      getMcBerryTransports: builder.query({
-        query: () => ({
-          url: "/transport/private",
-          method: "GET",
-        }),
-        providesTags: ["transport"],
-      }),
       getBeverageTransports: builder.query({
         query: () => ({
-          url: "/transport/private",
+          url: "/transport/beverage",
           method: "GET",
         }),
         providesTags: ["transport"],
       }),
+      getMcBerryTransports: builder.query({
+        query: () => ({
+          url: "/transport/mcberry",
+          method: "GET",
+        }),
+        providesTags: ["transport"],
+      }),
+
       getSingleTransport: builder.query({
         query: (id) => transportCrud.getSingle(id),
         providesTags: ["transport"],
@@ -55,4 +56,6 @@ export const {
   useGetSingleTransportQuery,
   useDeleteTransportMutation,
   useUpdateTransportMutation,
+  useGetMcBerryTransportsQuery,
+  useGetPrivateTransportsQuery,
 } = customerApi;

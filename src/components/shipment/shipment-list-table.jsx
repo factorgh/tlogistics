@@ -1,5 +1,6 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
+import moment from "moment";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdEyeOff } from "react-icons/io";
@@ -165,10 +166,10 @@ const ShipmentListTable = () => {
   const columns = [
     {
       title: "Tracking Number",
-      dataIndex: "tracking number",
-      key: "tracking number",
+      dataIndex: "vendor_memo_number",
+      key: "vendor_memo_number",
       width: 300,
-      ...getColumnSearchProps("tracking number"),
+      ...getColumnSearchProps("vendor_memo_number"),
     },
     {
       title: "Date",
@@ -176,32 +177,35 @@ const ShipmentListTable = () => {
       key: "date",
       width: 150,
       ...getColumnSearchProps("date"),
+      render: (text) => {
+        return moment(text).format("YYYY-MM-DD");
+      },
     },
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
-      width: 150,
-      ...getColumnSearchProps("name"),
+      dataIndex: "pickup_address",
+      key: "pickup_address",
+      width: 200,
+      ...getColumnSearchProps("pickup_address"),
     },
     {
       title: "From",
-      dataIndex: "from",
-      key: "from",
-      width: 150,
-      ...getColumnSearchProps("from"),
+      dataIndex: "driver_name",
+      key: "driver_name",
+      width: 200,
+      ...getColumnSearchProps("driver_name"),
     },
     {
       title: "To",
-      dataIndex: "to",
-      key: "to",
+      dataIndex: "pickup_person_name",
+      key: "pickup_person_name",
       width: 150,
-      ...getColumnSearchProps("to"),
+      ...getColumnSearchProps("pickup_person_name"),
     },
     {
-      title: "Current Location",
-      dataIndex: "current location",
-      key: "to",
+      title: "Load Type",
+      dataIndex: "load_type",
+      key: "load_type",
       width: 200,
       ...getColumnSearchProps("current location"),
     },
@@ -217,12 +221,10 @@ const ShipmentListTable = () => {
     },
     {
       title: "Payment",
-      dataIndex: "payment",
-      key: "payment",
+      dataIndex: "vendor_total",
+      key: "vendor_total",
       width: 200,
-      ...getColumnSearchProps("payment"),
-      sorter: (a, b) => a.location.length - b.location.length,
-      sortDirections: ["descend", "ascend"],
+      ...getColumnSearchProps("vendor_total"),
     },
     {
       title: "Action",
@@ -241,7 +243,7 @@ const ShipmentListTable = () => {
   return (
     <Table
       columns={columns}
-      dataSource={data.shipments}
+      dataSource={data?.shipments}
       scroll={{ x: 1000 }} // Enable horizontal scrolling
       className="border border-slate-200 rounded-md"
     />

@@ -1,91 +1,91 @@
-import { Button, Divider, Form, Input, Modal, Select } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import { Button, Divider, Form, Input, Modal, Select, Spin } from "antd";
 import { useState } from "react";
-import TransportBeverageTable from "../../components/transport/transport-beverage";
+import { toast } from "react-toastify";
+import { useCreateForkliftMutation } from "../../app/services/transport/forklift";
+import ForkliftTable from "../../components/transport/forklift";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
 
 const TransportForklift = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [createForklift, { isLoading }] = useCreateForkliftMutation();
 
-  const handleSubmit = () => {
-    // Handle form submission logic
-    setIsModalVisible(false); // Close modal after submission
+  const handleSubmit = async (values) => {
+    console.log(values);
+    try {
+      await createForklift(values).unwrap();
+      toast.success("Forklift Created Successfully");
+    } catch (error) {
+      toast.error(error.data?.message);
+    }
+    setIsModalVisible(false);
   };
 
   return (
     <CustomLayout>
-      <div className="flex items-center justify-between ">
-        <CustomHeader headerTitle={"Transport Beverages"} />
+      <div className="flex items-center justify-between">
+        <CustomHeader headerTitle={"Transport Forklift"} />
         <Button type="primary" onClick={() => setIsModalVisible(true)}>
-          Add Transport Beverages
+          Add ForkLift
         </Button>
       </div>
 
       {/* Ant Design Modal for Transport Beverages */}
       <Modal
-        title="Add Transport Beverages"
+        title="Add Forklift"
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
-        <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
-          <div>
-            <Divider />
-            <div className="grid grid-cols-2 gap-3">
-              <Form.Item
-                defaultValue="BEVERAGE"
-                label="Transport Type"
-                name={"transport_type"}
-              >
-                <Input disabled />
-              </Form.Item>
-              <Form.Item label="Vehicle Number" name={"vehicle number"}>
-                <Input />
-              </Form.Item>
-              <Form.Item label="Vehicle Type" name={"vehicle type"}>
-                <Input />
-              </Form.Item>
-              <Form.Item label="Driver Management" name={"driver management"}>
-                <Select>
-                  <Select.Option value="demo">Demo</Select.Option>
-                  {/* Add more options as needed */}
-                </Select>
-              </Form.Item>
-
-              <Form.Item label="Truck Assistant" name={"truck assistant"}>
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Registration Exp. Date"
-                name={"registration expiry date"}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Insurance Exp. Date"
-                name={"insurance expiry date"}
-              >
-                <Input />
-              </Form.Item>
-            </div>
-            <div>
-              <h5>Route Optimization</h5>
-              <TextArea rows={4} />
-            </div>
+        <Form onFinish={handleSubmit} layout="vertical" form={form}>
+          <Divider />
+          <div className="grid grid-cols-1 gap-2">
+            <Form.Item
+              label="Energy Type"
+              name="energy_type" // Changed from "energy type" to "energy_type"
+              rules={[{ required: true, message: "Please select energy type" }]} // Added validation rule
+            >
+              <Select>
+                <Select.Option value="gas">Gas</Select.Option>
+                <Select.Option value="diesel">Diesel</Select.Option>
+                <Select.Option value="electrical">Electrical</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Tonnage"
+              name="tonnage"
+              rules={[{ required: true, message: "Please enter tonnage" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Type"
+              name="type"
+              rules={[{ required: true, message: "Please select a type" }]}
+            >
+              <Select>
+                <Select.Option value="heli">Heli</Select.Option>
+                <Select.Option value="jac">Jac</Select.Option>
+              </Select>
+            </Form.Item>
           </div>
-          <div>
-            <Button className="w-full mt-3" type="primary" htmlType="submit">
-              Submit
-            </Button>
+          <div style={{ textAlign: "right" }}>
+            {isLoading ? (
+              <Button className="w-full mt-3" htmlType="submit">
+                <Spin />
+              </Button>
+            ) : (
+              <Button className="w-full mt-3" type="primary" htmlType="submit">
+                Submit
+              </Button>
+            )}
           </div>
         </Form>
       </Modal>
 
       {/* Beverage Table Section */}
-      <TransportBeverageTable />
+      <ForkliftTable />
     </CustomLayout>
   );
 };

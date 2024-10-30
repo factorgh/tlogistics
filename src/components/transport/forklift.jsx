@@ -3,13 +3,14 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
-
-const data = [];
+import { useGetForkliftsQuery } from "../../app/services/transport/forklift";
 
 const ForkliftTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const { data, isFetching } = useGetForkliftsQuery();
+  console.log(data);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -101,15 +102,15 @@ const ForkliftTable = () => {
   const columns = [
     {
       title: "Energy Type",
-      dataIndex: "energy type",
-      key: "energy type",
+      dataIndex: "energy_type",
+      key: "energy_type",
       width: 100,
       ...getColumnSearchProps("energy type"),
     },
     {
       title: "Tonage",
-      dataIndex: "tonage",
-      key: "tonage",
+      dataIndex: "tonnage",
+      key: "tonnage",
       width: 100,
       ...getColumnSearchProps("tonage"),
     },
@@ -138,7 +139,7 @@ const ForkliftTable = () => {
   return (
     <Table
       columns={columns}
-      dataSource={data}
+      dataSource={data?.forklifts}
       scroll={{ x: 1000 }} // Enable horizontal scrolling
       className="border border-slate-200 rounded-md"
     />

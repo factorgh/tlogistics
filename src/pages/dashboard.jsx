@@ -18,14 +18,40 @@ import {
   MdTrackChanges,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useGetShipmentsQuery } from "../app/services/shipment/shipment";
+import { useGetVendorsQuery } from "../app/services/vendors/vendors";
 import CustomAction from "../components/dashboard/custom-actions";
 import DashboardItem from "../components/dashboard/dashboardItem";
 import ResponsiveChartCard from "../components/dashboard/responsive-chart-card";
 import ResponsivePieChartCard from "../components/dashboard/responsive-pie-chart";
 import CustomHeader from "../core/custom-header";
 
+import { useGetCustomersQuery } from "../app/services/customer/customer";
+import { useGetRegistrationsQuery } from "../app/services/registration/registration";
+import { useGetVendorsExpenseQuery } from "../app/services/vendor-expense/vendor-expense";
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  // All data for dashboard statistics
+
+  const { dat: vendors } = useGetVendorsQuery();
+  const { data: shipments } = useGetShipmentsQuery();
+  const { data: registrations } = useGetRegistrationsQuery();
+  const { data: expenses } = useGetVendorsExpenseQuery();
+  const { data: customers } = useGetCustomersQuery();
+  console.log(shipments);
+
+  console.log(
+    `customers`,
+    customers,
+    `vendors`,
+    vendors,
+
+    `registrations`,
+    registrations,
+    `expenses`,
+    expenses
+  );
   return (
     <div className="bg-white w-full h-full p-5 border border-gray-200 rounded-md overflow-auto">
       <div className="w-full  flex justify-between items-center mb-5">
@@ -108,7 +134,7 @@ const Dashboard = () => {
           <CustomAction
             color="default"
             onClick={() => {
-              navigate("/main/dashboard");
+              navigate("/main/shipment-list");
             }}
             icon={<MdGrading />}
             title="Daily Operation"
@@ -126,7 +152,7 @@ const Dashboard = () => {
           <CustomAction
             color="default"
             onClick={() => {
-              navigate("/main/others/rentals");
+              navigate("/main/others/rental-vehicles");
             }}
             icon={<MdOutlineCommute />}
             title="Rentals"
@@ -135,7 +161,7 @@ const Dashboard = () => {
           <CustomAction
             color="default"
             onClick={() => {
-              navigate("/main/others/");
+              navigate("/main/others/financial-assets");
             }}
             icon={<MdOutlineCompareArrows />}
             title="Special Expenses"
@@ -164,7 +190,7 @@ const Dashboard = () => {
         <DashboardItem
           headerText="Total Shipments"
           icon={<MdOutlineLocalShipping size={50} className="text-slate-300" />}
-          text="100"
+          text={shipments?.shipments.length.toString()}
         />
         <DashboardItem
           headerText="Pending Delivery"
@@ -175,18 +201,18 @@ const Dashboard = () => {
         <DashboardItem
           headerText="Total Vehicles"
           icon={<MdOutlineDirectionsCar size={50} className="text-slate-300" />}
-          text="10"
+          text={registrations?.vehicleRegistration.length.toString()}
         />
         <DashboardItem
           headerText="Upcoming Expenses"
           headerTitle={"Error"}
           icon={<MdOutlinePayments size={50} className="text-slate-300" />}
-          text="GHC 1.5k"
+          text={expenses?.venderExpense.length.toString()}
         />
         <DashboardItem
           headerText="Total Customers"
           icon={<MdOutlineGroup size={50} className="text-slate-300" />}
-          text="50"
+          text={customers?.customers.length.toString()}
         />
         <DashboardItem
           headerText="Pending Payments"

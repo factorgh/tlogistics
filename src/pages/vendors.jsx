@@ -1,16 +1,21 @@
 import { Button, Divider, Form, Input, Modal } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
-import { MdUploadFile } from "react-icons/md";
 import { toast } from "react-toastify";
-import { useCreateVendorMutation } from "../app/services/vendors/vendors";
+import {
+  useCreateVendorMutation,
+  useGetVendorsQuery,
+} from "../app/services/vendors/vendors";
 import VendorListTable from "../components/vendor/vendor-list-table";
 import CustomHeader from "../core/custom-header";
+import ExportExcel from "../utils/excel-dowaloader";
 
 const VendorsList = () => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [createVendor, { isLoading, error }] = useCreateVendorMutation();
+  const { data } = useGetVendorsQuery();
+  console.log(data);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -121,12 +126,9 @@ const VendorsList = () => {
             </Form>
           </Modal>
 
-          <Button
-            icon={<MdUploadFile />}
-            style={{ backgroundColor: "#1CC88A", color: "#fff" }}
-          >
-            Excel
-          </Button>
+          <ExportExcel data={data?.vendors}>
+            <h5>Excel</h5>
+          </ExportExcel>
         </div>
       </div>
 

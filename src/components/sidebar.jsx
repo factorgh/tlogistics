@@ -1,6 +1,7 @@
 import {
   AiFillDashboard,
   AiFillPayCircle,
+  AiOutlinePlus,
   AiOutlineSafety,
   AiOutlineUnorderedList,
   AiOutlineUsergroupAdd,
@@ -100,6 +101,11 @@ const sideContent6 = [
     label: " Private Cars",
     path: "/main/transport/private-cars",
     icon: <AiTwotoneCar size={20} />,
+  },
+  {
+    label: "Forklift",
+    path: "/main/transport/forklift",
+    icon: <AiOutlinePlus size={20} />,
   },
 ];
 const sideContent7 = [

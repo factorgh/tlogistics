@@ -1,5 +1,16 @@
-import { Button, DatePicker, Divider, Form, Input, Modal, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Spin,
+} from "antd";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { useCreateFuelStationMutation } from "../../app/services/fuel-station/fuel-station";
 import DieselTable from "../../components/fuel-station/diesel-table";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
@@ -9,6 +20,7 @@ const Diesel = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
+  const [createDiesel, { isLoading }] = useCreateFuelStationMutation();
   const [dataSource, setDataSource] = useState([
     {
       key: 1,
@@ -49,40 +61,59 @@ const Diesel = () => {
   ]);
 
   // Handle form submission
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
+    const amount = values.consumption * values.unitPrice; // Calculate amount
+    const newRecord = {
+      // key: isEditing ? editRecord.key : dataSource.length + 1, // Assign a unique key
+      vehicle_number: values.vehicleNo,
+      date: values.date.format("YYYY-MM-DD"), // Format date for display
+      consumption: values.consumption,
+      unit_price: values.unitPrice,
+      amount: amount.toFixed(2),
+      pump: values.pump,
+      company: values.company,
+      phone: values.phoneNumber,
+      status: "Active",
+      type: "DIESEL",
+    };
+
     if (isEditing) {
       // Update logic
-      setDataSource((prev) =>
-        prev.map((record) => (record.key === editRecord.key ? values : record))
+      setDataSource(
+        dataSource.map((item) =>
+          item.key === editRecord.key ? newRecord : item
+        )
       );
-      console.log("Updating entry:", values);
     } else {
-      // Create logic
-      const newRecord = { key: Date.now(), ...values }; // Use a unique key for each entry
-      setDataSource((prev) => [...prev, newRecord]);
-      console.log("Creating new entry:", newRecord);
+      // Create petrol entity
+      try {
+        await createDiesel(newRecord);
+        console.log(newRecord); // Create logic
+        toast.success("Diesel entry created successfully");
+        // setDataSource([...dataSource, newRecord]);
+      } catch (error) {
+        toast.error(error?.data?.message);
+      }
     }
+
     // Close modal and reset form
     setIsModalVisible(false);
     form.resetFields();
   };
 
-  // Open modal for new entry
   const handleAdd = () => {
     setIsEditing(false);
     setEditRecord(null);
     setIsModalVisible(true);
   };
 
-  // Open modal for editing an entry
   const handleEdit = (record) => {
     setIsEditing(true);
     setEditRecord(record);
-    form.setFieldsValue(record); // Populate form with record data
+    form.setFieldsValue(record);
     setIsModalVisible(true);
   };
 
-  // Modal cancel button
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
@@ -126,7 +157,7 @@ const Diesel = () => {
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item label="Select" name="pump">
-              <Select defaultValue="pump1">
+              <Select placeholder="Select pump">
                 <Select.Option value="pump1">Pump 1</Select.Option>
                 <Select.Option value="pump2">Pump 2</Select.Option>
               </Select>
@@ -139,9 +170,15 @@ const Diesel = () => {
             </Form.Item>
           </div>
           <Divider />
-          <Button className="w-full" type="primary" htmlType="submit">
-            {isEditing ? "Update Entry" : "Add Entry"}
-          </Button>
+          {isLoading ? (
+            <Button className="w-full" htmlType="submit">
+              <Spin />
+            </Button>
+          ) : (
+            <Button className="w-full" type="primary" htmlType="submit">
+              {isEditing ? "Update Entry" : "Add Entry"}
+            </Button>
+          )}
         </Form>
       </Modal>
       <DieselTable dataSource={dataSource} handleEdit={handleEdit} />

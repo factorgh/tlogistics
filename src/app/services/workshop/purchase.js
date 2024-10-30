@@ -4,7 +4,7 @@ import { crudService } from "../custom-crud-service";
 // Define the purchase endpoints using crudService
 export const customerApi = baseApi.injectEndpoints({
   endpoints: (builder) => {
-    const purchaseCrud = crudService("/purchase");
+    const purchaseCrud = crudService("/workshop/purchase");
 
     return {
       createPurchase: builder.mutation({

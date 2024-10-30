@@ -57,7 +57,7 @@ const SparePartsCost = () => {
               />,
             ]}
           >
-            {item.name} - ${item.cost}
+            {item.name} - {item.cost}
           </List.Item>
         )}
       />

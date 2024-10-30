@@ -1,18 +1,24 @@
-/* eslint-disable react/prop-types */
 import { Table } from "antd";
+import moment from "moment";
 import { MdEdit } from "react-icons/md";
+import { useGetPetrolStationsQuery } from "../../app/services/fuel-station/fuel-station";
 
-const PetrolTable = ({ dataSource, handleEdit }) => {
+const PetrolTable = () => {
+  const { data, isFetching } = useGetPetrolStationsQuery();
+  console.log(data);
   const columns = [
     {
       title: "Vehicle No.",
-      dataIndex: "vehicleNo",
-      key: "vehicleNo",
+      dataIndex: "vehicle_number",
+      key: "vehicle_number",
     },
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
+      render: (text) => {
+        return moment(text).format("YYYY-MM-DD");
+      },
     },
     {
       title: "Consumption (Lts)",
@@ -21,8 +27,8 @@ const PetrolTable = ({ dataSource, handleEdit }) => {
     },
     {
       title: "Unit Price",
-      dataIndex: "unitPrice",
-      key: "unitPrice",
+      dataIndex: "unit_price",
+      key: "unit_price",
     },
     {
       title: "Amount",
@@ -41,14 +47,10 @@ const PetrolTable = ({ dataSource, handleEdit }) => {
     },
     {
       title: "Phone Number",
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
+      dataIndex: "phone",
+      key: "phone",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
+
     {
       title: "Action",
       key: "action",
@@ -64,7 +66,9 @@ const PetrolTable = ({ dataSource, handleEdit }) => {
     },
   ];
 
-  return <Table dataSource={dataSource} columns={columns} />;
+  return (
+    <Table loading={isFetching} dataSource={data?.stations} columns={columns} />
+  );
 };
 
 export default PetrolTable;

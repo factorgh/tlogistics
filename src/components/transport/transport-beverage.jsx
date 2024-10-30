@@ -3,49 +3,15 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
-
-const data = [
-  {
-    key: "1",
-    "Vehicle No.": "MH12AB1234",
-    "Vehicle Type": "LCV",
-    driver: "John Doe",
-    truck: "Beverage Truck 1",
-  },
-  {
-    key: "2",
-    "Vehicle No.": "MH12XY5678",
-    "Vehicle Type": "28Ft Open Truck",
-    driver: "Jane Smith",
-    truck: "Beverage Truck 2",
-  },
-  {
-    key: "3",
-    "Vehicle No.": "MH12CD9101",
-    "Vehicle Type": "LCV",
-    driver: "Mike Johnson",
-    truck: "Beverage Truck 3",
-  },
-  {
-    key: "4",
-    "Vehicle No.": "MH12EF2345",
-    "Vehicle Type": "28Ft Open Truck",
-    driver: "Emily Davis",
-    truck: "Beverage Truck 4",
-  },
-  {
-    key: "5",
-    "Vehicle No.": "MH12GH6789",
-    "Vehicle Type": "LCV",
-    driver: "Chris Brown",
-    truck: "Beverage Truck 5",
-  },
-];
+import { useGetBeverageTransportsQuery } from "../../app/services/transport/transport";
 
 const TransportBeverageTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const { data: beverageTransports, isFetching } =
+    useGetBeverageTransportsQuery();
+  console.log(beverageTransports);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -137,34 +103,53 @@ const TransportBeverageTable = () => {
   const columns = [
     {
       title: "Vehicle No.",
-      dataIndex: "Vehicle No.",
-      key: "Vehcle No.",
+      dataIndex: "vehicle_number",
+      key: "vehicle_number",
       width: 100,
-      ...getColumnSearchProps("Vehcle No."),
+      ...getColumnSearchProps("vehicle_number"),
     },
     {
       title: "Vehicle Type",
-      dataIndex: "Vehicle Type",
-      key: "Vehicle Type",
+      dataIndex: "vehicle_type",
+      key: "vehicle_type",
       width: 100,
-      ...getColumnSearchProps("Vehicle Type"),
+      ...getColumnSearchProps("vehicle_type"),
+    },
+    {
+      title: "Route optimization",
+      dataIndex: "route_optimization",
+      key: "route_optimization",
+      width: 100,
+      ...getColumnSearchProps("route_optimization"),
+    },
+    {
+      title: "Insurance Exp.",
+      dataIndex: "insurance_expiring_date",
+      key: "insurance_expiring_date",
+      width: 100,
+      ...getColumnSearchProps("insurance_expiring_date"),
+    },
+    {
+      title: "Registration Exp",
+      dataIndex: "registration_expiring_date",
+      key: "registration_expiring_date",
+      width: 100,
+      ...getColumnSearchProps("registration_expiring_date"),
     },
     {
       title: "Driver",
-      dataIndex: "driver",
-      key: "driver",
+      dataIndex: "driver_management",
+      key: "driver_management",
       width: 100,
-      ...getColumnSearchProps("driver"),
+      ...getColumnSearchProps("driver_management"),
     },
 
     {
-      title: "Truck Ass.",
-      dataIndex: "truck",
-      key: "truck",
+      title: "truck_assistant Ass.",
+      dataIndex: "truck_assistant",
+      key: "truck_assistant",
       width: 200,
-      ...getColumnSearchProps("truck"),
-      sorter: (a, b) => a.location.length - b.location.length,
-      sortDirections: ["descend", "ascend"],
+      ...getColumnSearchProps("truck_assistant"),
     },
 
     {
@@ -178,14 +163,14 @@ const TransportBeverageTable = () => {
         </a>
       ),
     },
-    // Add more columns as needed
   ];
 
   return (
     <Table
+      loading={isFetching}
       columns={columns}
-      dataSource={data}
-      scroll={{ x: 1000 }} // Enable horizontal scrolling
+      dataSource={beverageTransports?.transports}
+      scroll={{ x: 1000 }}
       className="border border-slate-200 rounded-md"
     />
   );

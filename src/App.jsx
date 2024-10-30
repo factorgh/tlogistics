@@ -28,6 +28,7 @@ import SignUpPage from "./pages/sign-up.jsx";
 import SingleStaff from "./pages/single-staff.jsx";
 import StaffList from "./pages/staff-list.jsx";
 import TransportBeverage from "./pages/transport/transport-beverage.jsx";
+import TransportForklift from "./pages/transport/transport-forklift.jsx";
 import TransportMcBerry from "./pages/transport/transport-mcberry.jsx";
 import TransportPrivateCars from "./pages/transport/transport-private-cars.jsx";
 import VendorExpenses from "./pages/vendor-expenses.jsx";
@@ -72,6 +73,10 @@ function App() {
                 element={<TransportPrivateCars />}
               />
               <Route path="transport/mcberry" element={<TransportMcBerry />} />
+              <Route
+                path="transport/forklift"
+                element={<TransportForklift />}
+              />
               {/* Workshop */}
               <Route path="workshop/mechanic" element={<Mechanic />} />
               <Route path="workshop/purchase" element={<Purchase />} />

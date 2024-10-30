@@ -65,7 +65,7 @@ const Petrol = () => {
   const handleSubmit = async (values) => {
     const amount = values.consumption * values.unitPrice; // Calculate amount
     const newRecord = {
-      key: isEditing ? editRecord.key : dataSource.length + 1, // Assign a unique key
+      // key: isEditing ? editRecord.key : dataSource.length + 1, // Assign a unique key
       vehicle_number: values.vehicleNo,
       date: values.date.format("YYYY-MM-DD"), // Format date for display
       consumption: values.consumption,
@@ -77,16 +77,6 @@ const Petrol = () => {
       status: "Active",
       type: "PETROL",
     };
-    // const {
-    //   vehicle_number,
-    //   date,
-    //   consumption,
-    //   unit_price,
-    //   amount,
-    //   pump,
-    //   company,
-    //   phone,
-    // } = newRecord;
 
     if (isEditing) {
       // Update logic
@@ -194,7 +184,7 @@ const Petrol = () => {
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
               <Form.Item label="Select Pump" name="pump">
-                <Select defaultValue="pump1">
+                <Select placeholder="Select pump">
                   <Select.Option value="pump1">Pump 1</Select.Option>
                   <Select.Option value="pump2">Pump 2</Select.Option>
                 </Select>

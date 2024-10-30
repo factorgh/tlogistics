@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, Modal, Select } from "antd";
+import { Button, Divider, Form, Input, Modal, Select, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -10,15 +10,15 @@ import CustomLayout from "../../core/custom-layout";
 const TransportBeverage = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [createTransportBeverage] = useCreateTransportMutation();
+  const [createTransportBeverage, { isLoading }] = useCreateTransportMutation();
 
   const handleSubmit = async (values) => {
-    console.log(values);
     const formattedValues = {
       ...values,
-      trasnport_type: "BEVERAGE",
+      transport_type: "BEVERAGE",
     };
     console.log(formattedValues);
+
     try {
       await createTransportBeverage(formattedValues).unwrap();
       form.resetFields();
@@ -49,7 +49,7 @@ const TransportBeverage = () => {
           <div>
             <Divider />
             <div className="grid grid-cols-2 gap-3">
-              <Form.Item label="Vehicle Number" name={"vehicle number"}>
+              <Form.Item label="Vehicle Number" name={"vehicle_number"}>
                 <Input />
               </Form.Item>
               <Form.Item label="Vehicle Type" name={"vehicle_type"}>
@@ -79,15 +79,22 @@ const TransportBeverage = () => {
                 <Input />
               </Form.Item>
             </div>
-            <div>
-              <h5>Route Optimization</h5>
+            <h5>Route Optimization</h5>
+            <Form.Item name="route_optimization" noStyle>
               <TextArea rows={4} />
-            </div>
+            </Form.Item>
           </div>
+
           <div>
-            <Button className="w-full mt-3" type="primary" htmlType="submit">
-              Submit
-            </Button>
+            {isLoading ? (
+              <Button className="w-full mt-3" htmlType="submit">
+                <Spin />
+              </Button>
+            ) : (
+              <Button className="w-full mt-3" type="primary" htmlType="submit">
+                Submit
+              </Button>
+            )}
           </div>
         </Form>
       </Modal>

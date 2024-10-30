@@ -3,13 +3,13 @@ import { Button, Input, Space, Table } from "antd";
 import { Edit } from "lucide-react";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { useGetTransportsQuery } from "../../app/services/transport/mcberry-transport";
+import { useGetPrivateTransportsQuery } from "../../app/services/transport/transport";
 
-const TransportPrivateCarsTable = () => {
+const TransportPrivateTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-  const { data } = useGetTransportsQuery();
+  const { data, isFetching } = useGetPrivateTransportsQuery();
   console.log(data);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -102,36 +102,54 @@ const TransportPrivateCarsTable = () => {
   const columns = [
     {
       title: "Vehicle No.",
-      dataIndex: "Vehicle No.",
-      key: "Vehcle No.",
+      dataIndex: "vehicle_number",
+      key: "vehicle_number",
       width: 100,
-      ...getColumnSearchProps("Vehcle No."),
+      ...getColumnSearchProps("vehicle_number"),
     },
     {
       title: "Vehicle Type",
-      dataIndex: "Vehicle Type",
-      key: "Vehicle Type",
+      dataIndex: "vehicle_type",
+      key: "vehicle_type",
       width: 100,
-      ...getColumnSearchProps("Vehicle Type"),
+      ...getColumnSearchProps("vehicle_type"),
+    },
+    {
+      title: "Route optimization",
+      dataIndex: "route_optimization",
+      key: "route_optimization",
+      width: 100,
+      ...getColumnSearchProps("route_optimization"),
+    },
+    {
+      title: "Insurance Exp.",
+      dataIndex: "insurance_expiring_date",
+      key: "insurance_expiring_date",
+      width: 100,
+      ...getColumnSearchProps("insurance_expiring_date"),
+    },
+    {
+      title: "Registration Exp",
+      dataIndex: "registration_expiring_date",
+      key: "registration_expiring_date",
+      width: 100,
+      ...getColumnSearchProps("registration_expiring_date"),
     },
     {
       title: "Driver",
-      dataIndex: "driver",
-      key: "driver",
+      dataIndex: "driver_management",
+      key: "driver_management",
       width: 100,
-      ...getColumnSearchProps("driver"),
+      ...getColumnSearchProps("driver_management"),
     },
 
     {
-      title: "Truck Ass.",
-      dataIndex: "truck",
-      key: "truck",
+      title: "truck_assistant Ass.",
+      dataIndex: "truck_assistant",
+      key: "truck_assistant",
       width: 200,
-      ...getColumnSearchProps("truck"),
-      sorter: (a, b) => a.location.length - b.location.length,
-      sortDirections: ["descend", "ascend"],
+      ...getColumnSearchProps("truck_assistant"),
     },
-
     {
       title: "Action",
       dataIndex: "",
@@ -148,12 +166,13 @@ const TransportPrivateCarsTable = () => {
 
   return (
     <Table
+      loading={isFetching}
       columns={columns}
-      dataSource={data}
+      dataSource={data?.transports}
       scroll={{ x: 1000 }} // Enable horizontal scrolling
       className="border border-slate-200 rounded-md"
     />
   );
 };
 
-export default TransportPrivateCarsTable;
+export default TransportPrivateTable;

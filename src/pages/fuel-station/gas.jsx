@@ -1,5 +1,16 @@
-import { Button, DatePicker, Divider, Form, Input, Modal, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Spin,
+} from "antd";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { useCreateFuelStationMutation } from "../../app/services/fuel-station/fuel-station";
 import GasTable from "../../components/fuel-station/gas-table";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
@@ -9,6 +20,7 @@ const Gas = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
+  const [createGas, { isLoading }] = useCreateFuelStationMutation();
 
   // Sample data source
   const [dataSource, setDataSource] = useState([
@@ -39,19 +51,21 @@ const Gas = () => {
     // Add more sample entries if needed
   ]);
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     const amount = values.consumption * values.unitPrice; // Calculate amount
     const newRecord = {
-      key: isEditing ? editRecord.key : dataSource.length + 1, // Assign a unique key
-      vehicleNo: values.vehicleNo,
-      consumption: values.consumption,
-      unitPrice: values.unitPrice,
-      amount: amount.toFixed(2), // Keep two decimal places
+      // key: isEditing ? editRecord.key : dataSource.length + 1, // Assign a unique key
+      vehicle_number: values.vehicleNo,
       date: values.date.format("YYYY-MM-DD"), // Format date for display
+      consumption: values.consumption,
+      unit_price: values.unitPrice,
+      amount: amount.toFixed(2),
       pump: values.pump,
       company: values.company,
-      phoneNumber: values.phoneNumber,
+      phone: values.phoneNumber,
       entity: values.entity,
+      status: "Active",
+      type: "GAS",
     };
 
     if (isEditing) {
@@ -62,15 +76,21 @@ const Gas = () => {
         )
       );
     } else {
-      // Create logic
-      setDataSource([...dataSource, newRecord]);
+      // Create petrol entity
+      try {
+        await createGas(newRecord);
+        console.log(newRecord); // Create logic
+        toast.success("Gas entry created successfully");
+        // setDataSource([...dataSource, newRecord]);
+      } catch (error) {
+        toast.error(error?.data?.message);
+      }
     }
 
     // Close modal and reset form
     setIsModalVisible(false);
     form.resetFields();
   };
-
   const handleAdd = () => {
     setIsEditing(false);
     setEditRecord(null);
@@ -80,7 +100,7 @@ const Gas = () => {
   const handleEdit = (record) => {
     setIsEditing(true);
     setEditRecord(record);
-    form.setFieldsValue(record); // Populate form with record data
+    form.setFieldsValue(record);
     setIsModalVisible(true);
   };
 
@@ -147,7 +167,7 @@ const Gas = () => {
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item label="Select Pump" name="pump">
-              <Select defaultValue="pump1">
+              <Select placeholder="Select a pump">
                 <Select.Option value="pump1">Pump 1</Select.Option>
                 <Select.Option value="pump2">Pump 2</Select.Option>
               </Select>
@@ -160,15 +180,23 @@ const Gas = () => {
             </Form.Item>
             <Form.Item label="Entity" name="entity">
               <Select defaultValue="forklift">
-                <Select.Option value="forklift">Forklift</Select.Option>
-                <Select.Option value="factory">Factory & Houses</Select.Option>
+                <Select.Option value="FOLK_LIFT">Forklift</Select.Option>
+                <Select.Option value="FACTORY_AND_HOUSES">
+                  Factory & Houses
+                </Select.Option>
               </Select>
             </Form.Item>
           </div>
           <Divider />
-          <Button className="w-full" type="primary" htmlType="submit">
-            {isEditing ? "Update Entry" : "Add Entry"}
-          </Button>
+          {isLoading ? (
+            <Button className="w-full" htmlType="submit">
+              <Spin />
+            </Button>
+          ) : (
+            <Button className="w-full" type="primary" htmlType="submit">
+              {isEditing ? "Update Entry" : "Add Entry"}
+            </Button>
+          )}
         </Form>
       </Modal>
 

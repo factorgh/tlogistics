@@ -1,25 +1,36 @@
-import { Button, Divider, Form, Input, Modal, Select } from "antd";
+import { Button, Divider, Form, Input, Modal, Select, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
-import ForkliftTable from "../../components/transport/forklift";
-import TransportMcBerryTable from "../../components/transport/transport-mcberry";
+
+import { toast } from "react-toastify";
+import { useCreateTransportMutation } from "../../app/services/transport/transport";
+import TransportPrivateTable from "../../components/transport/transport-private-cars";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
 
 const TransportPrivateCars = () => {
   const [formPrivateCars] = Form.useForm();
-  const [formForklift] = Form.useForm();
+
   const [isPrivateCarsModalVisible, setIsPrivateCarsModalVisible] =
     useState(false);
-  const [isForkliftModalVisible, setIsForkliftModalVisible] = useState(false);
+  const [createTransportPrivateCars, { isLoading }] =
+    useCreateTransportMutation();
 
-  const handleSubmitPrivateCars = () => {
-    setIsPrivateCarsModalVisible(false); // Close modal after submission
-  };
-
-  const handleSubmitForklift = () => {
-    // Handle form submission logic for Forklift
-    setIsForkliftModalVisible(false); // Close modal after submission
+  const handleSubmitPrivateCars = async (values) => {
+    console.log(values);
+    const formattedValues = {
+      ...values,
+      transport_type: "PRIVATE CARS",
+    };
+    console.log(formattedValues);
+    try {
+      await createTransportPrivateCars(formattedValues).unwrap();
+      formPrivateCars.resetFields();
+      toast.success("Transport Private Cars Created Successfully");
+    } catch (error) {
+      toast.error(error.data?.message);
+    }
+    setIsPrivateCarsModalVisible(false);
   };
 
   return (
@@ -49,105 +60,65 @@ const TransportPrivateCars = () => {
           <div>
             <Divider />
             <div className="grid grid-cols-2 gap-3">
-              <Form.Item label="Vehicle Number" name={"vehicle number"}>
+              <Form.Item label="Vehicle Number" name={"vehicle_number"}>
                 <Input />
               </Form.Item>
-              <Form.Item label="Vehicle Type" name={"vehicle type"}>
+              <Form.Item label="Vehicle Type" name={"vehicle_type"}>
                 <Input />
               </Form.Item>
-              <Form.Item label="Driver Management" name={"driver management"}>
+              <Form.Item label="Driver Management" name={"driver_management"}>
                 <Select>
                   <Select.Option value="demo">Demo</Select.Option>
                   {/* Add more options as needed */}
                 </Select>
               </Form.Item>
 
-              <Form.Item label="Truck Assistant" name={"truck assistant"}>
+              <Form.Item label="Truck Assistant" name={"truck_assistant"}>
                 <Input />
               </Form.Item>
 
               <Form.Item
                 label="Registration Exp. Date"
-                name={"registration expiry date"}
+                name={"registration_expiring_date"}
               >
                 <Input />
               </Form.Item>
               <Form.Item
                 label="Insurance Exp. Date"
-                name={"insurance expiry date"}
+                name={"insurance_expiring_date"}
               >
                 <Input />
               </Form.Item>
             </div>
-            <div>
-              <h5>Route Optimization</h5>
+            <h5>Route Optimization</h5>
+            <Form.Item name="route_optimization" noStyle>
               <TextArea rows={4} />
-            </div>
+            </Form.Item>
           </div>
+
           <div style={{ textAlign: "right" }}>
-            <Button className="w-full mt-3" type="primary" htmlType="submit">
-              Submit
-            </Button>
+            {isLoading ? (
+              <Button className="w-full mt-3" htmlType="submit">
+                <Spin />
+              </Button>
+            ) : (
+              <Button
+                className="w-full text-white mt-3"
+                type="primary"
+                htmlType="submit"
+              >
+                Submit
+              </Button>
+            )}
           </div>
         </Form>
       </Modal>
 
       {/* Table Section */}
-      <TransportMcBerryTable />
+      <TransportPrivateTable />
 
       {/* Separator */}
       <Divider className="mt-8" />
-
-      <div className="flex items-center justify-between ">
-        <h5 className="text-2xl mb-3 font-sembold text-[#5F616E]">Forklift</h5>
-        <Button type="primary" onClick={() => setIsForkliftModalVisible(true)}>
-          Add Forklift
-        </Button>
-      </div>
-
-      {/* Ant Design Modal for Forklift */}
-      <Modal
-        title="Add Forklift"
-        visible={isForkliftModalVisible}
-        onCancel={() => setIsForkliftModalVisible(false)}
-        footer={null} // Set footer to null to use custom footer if needed
-      >
-        <Form
-          onFinish={handleSubmitForklift}
-          layout={"vertical"}
-          form={formForklift}
-        >
-          <div>
-            <Divider />
-            <div className="grid grid-cols-1 gap-2">
-              <Form.Item label="Energy Type" name={"energy type"}>
-                <Select>
-                  <Select.Option value="gas">Gas</Select.Option>
-                  <Select.Option value="diesel">Diesel</Select.Option>
-                  <Select.Option value="electrical">Electrical</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item label="Tonage" name={"tonage"}>
-                <Input />
-              </Form.Item>
-              <Form.Item label="Type" name={"type"}>
-                <Select>
-                  <Select.Option value="heli">Heli</Select.Option>
-                  <Select.Option value="jac">Jac</Select.Option>
-                </Select>
-              </Form.Item>
-            </div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <Button className="w-full mt-3" type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </div>
-        </Form>
-      </Modal>
-
-      {/* Forklift Table */}
-      <ForkliftTable />
     </CustomLayout>
   );
 };

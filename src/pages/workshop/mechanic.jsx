@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, Modal, Select } from "antd";
+import { Button, Divider, Form, Input, Modal, Select, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -13,14 +13,14 @@ const Mechanic = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [spareParts, setSpareParts] = useState([]); // State to hold spare parts
-  const [createMechanic] = useCreateMechanicMutation();
+  const [createMechanic, { isLoading }] = useCreateMechanicMutation();
 
   const handleSparePartsChange = (newSpareParts) => {
     setSpareParts(newSpareParts); // Update spare parts state
   };
 
   const handleSubmit = async (values) => {
-    const mechanicData = { ...values, spare_part: spareParts }; // Include spare parts in submission
+    const mechanicData = { ...values, spare_parts: spareParts }; // Include spare parts in submission
     console.log(mechanicData);
     // Handle form submission logic here
     if (editingRecord) {
@@ -106,7 +106,7 @@ const Mechanic = () => {
               <Input />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               label="Registration Expiry Date"
               name={"reg_expiry_Date"}
               rules={[
@@ -117,9 +117,9 @@ const Mechanic = () => {
               ]}
             >
               <Input />
-            </Form.Item>
+            </Form.Item> */}
 
-            <Form.Item
+            {/* <Form.Item
               label="Insurance Expiry Date"
               name={"insurance_expiry_date"}
               rules={[
@@ -130,7 +130,7 @@ const Mechanic = () => {
               ]}
             >
               <Input />
-            </Form.Item>
+            </Form.Item> */}
           </div>
           <SparePartsInput onSparePartsChange={handleSparePartsChange} />{" "}
           {/* Pass the handler function */}
@@ -143,7 +143,7 @@ const Mechanic = () => {
           <div>
             <h5 className="mb-3">Daily Report </h5>
             <Form.Item
-              name={"daily_report"}
+              name={"daily_report_cost"}
               rules={[
                 {
                   required: true,
@@ -185,9 +185,15 @@ const Mechanic = () => {
               </Form.Item>
             </div>
           </div>
-          <Button className="w-full px-5" type="primary" htmlType="submit">
-            {editingRecord ? "Update" : "Submit"}
-          </Button>
+          {isLoading ? (
+            <Button className="w-full px-5" htmlType="submit" disabled>
+              <Spin />
+            </Button>
+          ) : (
+            <Button className="w-full px-5" type="primary" htmlType="submit">
+              {editingRecord ? "Update" : "Submit"}
+            </Button>
+          )}
         </Form>
       </Modal>
     </CustomLayout>

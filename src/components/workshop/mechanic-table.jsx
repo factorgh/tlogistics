@@ -3,6 +3,7 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
+import { useGetMechanicsQuery } from "../../app/services/workshop/mechanic";
 
 // Professional dummy data for the table
 const data = [
@@ -40,6 +41,7 @@ const MechanicTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const { data: mechData, isFetching } = useGetMechanicsQuery();
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -130,34 +132,33 @@ const MechanicTable = () => {
 
   const columns = [
     {
-      title: "Vehicle No.",
-      dataIndex: "Vehicle No.",
-      key: "Vehicle No.",
+      title: "Vehicle  Maintenance .",
+      dataIndex: "vehicle_maintenance",
+      key: "vehicle_maintenance.",
       width: 100,
-      ...getColumnSearchProps("Vehicle No."),
+      ...getColumnSearchProps("vehicle_maintenance"),
     },
     {
-      title: "Vehicle Type",
-      dataIndex: "Vehicle Type",
-      key: "Vehicle Type",
+      title: "Diagonistic Service",
+      dataIndex: "diagnostic_services",
+
+      key: "diagonistic_services",
       width: 100,
-      ...getColumnSearchProps("Vehicle Type"),
+      ...getColumnSearchProps("diagnostic_services"),
     },
     {
-      title: "Driver",
-      dataIndex: "driver",
-      key: "driver",
+      title: "Repair/Overhaul",
+      dataIndex: "repair_and_overhaul",
+      key: "repair_and_overhaul",
       width: 100,
-      ...getColumnSearchProps("driver"),
+      ...getColumnSearchProps("repair_and_overhaul"),
     },
     {
-      title: "Truck Ass.",
-      dataIndex: "truck",
-      key: "truck",
-      width: 200,
-      ...getColumnSearchProps("truck"),
-      sorter: (a, b) => a.truck.length - b.truck.length,
-      sortDirections: ["descend", "ascend"],
+      title: "Break Down Response",
+      dataIndex: "break_down_response",
+      key: "break_down_response",
+      width: 300,
+      ...getColumnSearchProps("break_down_response"),
     },
     {
       title: "Action",
@@ -174,8 +175,9 @@ const MechanicTable = () => {
 
   return (
     <Table
+      loading={isFetching}
       columns={columns}
-      dataSource={data}
+      dataSource={mechData?.mechanics}
       scroll={{ x: 1000 }}
       className="border border-slate-200 rounded-md"
     />
