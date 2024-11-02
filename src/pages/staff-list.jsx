@@ -68,7 +68,7 @@ const StaffList = () => {
             cancelButtonProps={{
               style: { backgroundColor: "#858796", color: "white" },
             }}
-            confirmLoading={isLoading} // Show loading state on the OK button
+            confirmLoading={isLoading}
           >
             <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
               <div>

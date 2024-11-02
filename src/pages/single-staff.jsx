@@ -31,20 +31,20 @@ const SingleStaff = () => {
             <img
               src={data?.profilePicture || "/images/profile.png"}
               className="h-32 w-32 rounded-full object-cover"
-              alt={data?.name || "Staff Member"}
+              alt={data?.user.name || "Staff Member"}
             />
             <h5 className="mt-3 text-2xl font-bold mb-1">
-              {data?.name || "Unknown"}
+              {data?.user.name || "Unknown"}
             </h5>
             <Button className="rounded-full bg-[#1CC88A] text-white">
-              {data?.status || "Active"}
+              {data?.user.status || "Active"}
             </Button>
             <Divider className="my-3" />
 
             <div className="text-center">
               <h3 className="font-semibold">Email</h3>
               <p className="text-gray-600">
-                {data?.email || "No email provided."}
+                {data?.user.email || "No email provided."}
               </p>
             </div>
           </div>
@@ -55,31 +55,35 @@ const SingleStaff = () => {
             <Divider />
             <div className="space-y-3">
               <p>
-                <strong>Position:</strong> {data?.position || "N/A"}
+                <strong>Position:</strong> {data?.user.position || "N/A"}
               </p>
               <p>
                 <strong>Starting Date:</strong>{" "}
-                {data?.start_date
-                  ? new Date(data.start_date).toLocaleDateString()
+                {data?.user.start_date
+                  ? new Date(data?.user.start_date).toLocaleDateString()
                   : "N/A"}
               </p>
               <p>
-                <strong>Username:</strong> {data?.username || "N/A"}
+                <strong>Username:</strong> {data?.user.username || "N/A"}
               </p>
               <p>
                 <strong>Emergency Contact:</strong>{" "}
-                {data?.emergency_name || "N/A"} (
-                {data?.emergency_number || "N/A"})
+                {data?.user.emergency_name || "N/A"} (
+                {data?.user.emergency_number || "N/A"})
               </p>
               <p>
-                <strong>ID Card:</strong> {data?.id_card_type || "N/A"} -{" "}
-                {data?.id_card_number || "N/A"}
+                <strong>ID Card:</strong> {data?.user.id_card_type || "N/A"} -{" "}
+                {data?.user.license || "N/A"}
               </p>
               <p>
-                <strong>Phone Number:</strong> {data?.phone || "N/A"}
+                <strong>ID Card Number:</strong>{" "}
+                {data?.user.id_card_number || "N/A"} -{" "}
               </p>
               <p>
-                <strong>Address:</strong> {data?.employee_address || "N/A"}
+                <strong>Phone Number:</strong> {data?.user.phone || "N/A"}
+              </p>
+              <p>
+                <strong>Address:</strong> {data?.user.address || "N/A"}
               </p>
             </div>
           </div>

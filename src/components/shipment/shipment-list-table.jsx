@@ -4,6 +4,7 @@ import moment from "moment";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdEyeOff } from "react-icons/io";
+import { MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useGetShipmentsQuery } from "../../app/services/shipment/shipment";
 
@@ -70,10 +71,14 @@ const ShipmentListTable = () => {
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const navigate = useNavigate();
-  const { data } = useGetShipmentsQuery();
+  const { data, isFetching } = useGetShipmentsQuery();
+  console.log(data?.shipments);
 
-  const goToShipmentDetail = () => {
+  const goToShipmentDetail = (shipment) => {
     navigate("/main/shipment-detail", { state: { shipment } });
+  };
+  const goToShipmentUpdate = (shipment) => {
+    navigate("/main/update-shipment", { state: { shipment } });
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -231,9 +236,10 @@ const ShipmentListTable = () => {
       dataIndex: "",
       key: "action",
       width: 100,
-      render: () => (
-        <a>
-          <IoMdEyeOff onClick={goToShipmentDetail} />
+      render: (_, record) => (
+        <a className="flex gap-3">
+          <IoMdEyeOff onClick={() => goToShipmentDetail(record)} />
+          <MdEdit onClick={() => goToShipmentUpdate(record)} />
         </a>
       ),
     },
@@ -242,6 +248,8 @@ const ShipmentListTable = () => {
 
   return (
     <Table
+      loading={isFetching}
+      pagination={{ pageSize: 10 }}
       columns={columns}
       dataSource={data?.shipments}
       scroll={{ x: 1000 }} // Enable horizontal scrolling
@@ -251,40 +259,40 @@ const ShipmentListTable = () => {
 };
 
 export default ShipmentListTable;
-const shipment = {
-  trackingNumber: "MB123456789",
-  date: "2024-10-01",
-  senderName: "John Doe",
-  receiverName: "Jane Smith",
-  from: "New York, NY",
-  to: "Los Angeles, CA",
-  currentLocation: "Kansas City, MO",
-  status: "In Transit",
-  paymentStatus: "Paid",
-  timelineEvents: [
-    {
-      location: "New York, NY",
-      time: "2024-10-01 10:00 AM",
-      description: "Shipment picked up",
-      status: "completed",
-    },
-    {
-      location: "Philadelphia, PA",
-      time: "2024-10-01 5:00 PM",
-      description: "In transit",
-      status: "completed",
-    },
-    {
-      location: "Kansas City, MO",
-      time: "2024-10-02 9:00 AM",
-      description: "In transit",
-      status: "in-progress",
-    },
-    {
-      location: "Los Angeles, CA",
-      time: "Expected: 2024-10-03",
-      description: "Out for delivery",
-      status: "pending",
-    },
-  ],
-};
+// const shipment = {
+//   trackingNumber: "MB123456789",
+//   date: "2024-10-01",
+//   senderName: "John Doe",
+//   receiverName: "Jane Smith",
+//   from: "New York, NY",
+//   to: "Los Angeles, CA",
+//   currentLocation: "Kansas City, MO",
+//   status: "In Transit",
+//   paymentStatus: "Paid",
+//   timelineEvents: [
+//     {
+//       location: "New York, NY",
+//       time: "2024-10-01 10:00 AM",
+//       description: "Shipment picked up",
+//       status: "completed",
+//     },
+//     {
+//       location: "Philadelphia, PA",
+//       time: "2024-10-01 5:00 PM",
+//       description: "In transit",
+//       status: "completed",
+//     },
+//     {
+//       location: "Kansas City, MO",
+//       time: "2024-10-02 9:00 AM",
+//       description: "In transit",
+//       status: "in-progress",
+//     },
+//     {
+//       location: "Los Angeles, CA",
+//       time: "Expected: 2024-10-03",
+//       description: "Out for delivery",
+//       status: "pending",
+//     },
+//   ],
+// };

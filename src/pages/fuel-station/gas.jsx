@@ -10,10 +10,14 @@ import {
 } from "antd";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useCreateFuelStationMutation } from "../../app/services/fuel-station/fuel-station";
+import {
+  useCreateFuelStationMutation,
+  useGetGasStationsQuery,
+} from "../../app/services/fuel-station/fuel-station";
 import GasTable from "../../components/fuel-station/gas-table";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
+import ExportDailyExcel from "../../utils/excel-daily-downloader";
 
 const Gas = () => {
   const [form] = Form.useForm();
@@ -21,6 +25,8 @@ const Gas = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
   const [createGas, { isLoading }] = useCreateFuelStationMutation();
+  const { data } = useGetGasStationsQuery();
+  console.log(data);
 
   // Sample data source
   const [dataSource, setDataSource] = useState([
@@ -113,10 +119,13 @@ const Gas = () => {
     <CustomLayout>
       <div className="flex items-center justify-between">
         <CustomHeader headerTitle={"Gas"} />
-        <div>
+        <div className="flex gap-3">
           <Button type="primary" onClick={handleAdd}>
             Add Entry
           </Button>
+          <ExportDailyExcel data={data?.stations}>
+            <h3>Daily Report</h3>
+          </ExportDailyExcel>
         </div>
       </div>
 

@@ -2,15 +2,22 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdEyeOff } from "react-icons/io";
+import { IoMdEyeOff, IoMdTrash } from "react-icons/io";
+import { MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { useGetStaffsQuery } from "../../app/services/staff/staff";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import {
+  useDeleteStaffMutation,
+  useGetStaffsQuery,
+} from "../../app/services/staff/staff";
 
 const StaffListTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const { data, isFetching } = useGetStaffsQuery();
+  const [deleteStaff] = useDeleteStaffMutation();
   const navigate = useNavigate();
   console.log(data?.users);
 
@@ -23,6 +30,27 @@ const StaffListTable = () => {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
+  };
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this customer?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteStaff(id).unwrap();
+        toast.success("Staff deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete vendor");
+      }
+    }
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -138,13 +166,19 @@ const StaffListTable = () => {
       key: "action",
       width: 100,
       render: (_, record) => (
-        <a>
+        <div className="flex gap-3">
           <IoMdEyeOff
             onClick={() =>
               navigate("/main/staff-detail", { state: { staffId: record.id } })
             }
           />
-        </a>
+          <MdEdit
+            onClick={() =>
+              navigate("/main/staff-detail", { state: { staffId: record.id } })
+            }
+          />
+          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+        </div>
       ),
     },
   ];

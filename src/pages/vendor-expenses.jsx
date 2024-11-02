@@ -1,6 +1,5 @@
-import { Button, Dropdown } from "antd";
+import { Button } from "antd";
 import { useEffect, useState } from "react";
-import { MdFilterAlt } from "react-icons/md";
 import { toast } from "react-toastify";
 import VendorExpensesTable from "../components/vendor/vendor-expenses-table";
 import CustomHeader from "../core/custom-header";
@@ -86,11 +85,6 @@ const VendorExpenses = () => {
           <ExportExcel data={data?.vendors}>
             <h5>Excel</h5>
           </ExportExcel>
-          <Dropdown menu={{ items }} placement="bottomRight">
-            <Button>
-              Last month <MdFilterAlt />
-            </Button>
-          </Dropdown>
         </div>
       </div>
       {/* Quotation form */}

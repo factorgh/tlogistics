@@ -2,25 +2,31 @@ import { Button, Divider, Form, Input, Modal, Select, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useCreateMechanicMutation } from "../../app/services/workshop/mechanic";
+import {
+  useCreateMechanicMutation,
+  useGetMechanicsQuery,
+} from "../../app/services/workshop/mechanic";
 import MechanicTable from "../../components/workshop/mechanic-table";
 import SparePartsInput from "../../components/workshop/spare-parts-input";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
+import ExportDailyExcel from "../../utils/excel-daily-downloader";
 
 const Mechanic = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
-  const [spareParts, setSpareParts] = useState([]); // State to hold spare parts
+  const [spareParts, setSpareParts] = useState([]);
   const [createMechanic, { isLoading }] = useCreateMechanicMutation();
+  const { data } = useGetMechanicsQuery();
+  console.log(data);
 
   const handleSparePartsChange = (newSpareParts) => {
-    setSpareParts(newSpareParts); // Update spare parts state
+    setSpareParts(newSpareParts);
   };
 
   const handleSubmit = async (values) => {
-    const mechanicData = { ...values, spare_parts: spareParts }; // Include spare parts in submission
+    const mechanicData = { ...values, spare_parts: spareParts };
     console.log(mechanicData);
     // Handle form submission logic here
     if (editingRecord) {
@@ -44,7 +50,7 @@ const Mechanic = () => {
   const openModalForAdd = () => {
     setEditingRecord(null);
     form.resetFields();
-    setSpareParts([]); // Reset spare parts when opening modal
+    setSpareParts([]);
     setIsModalVisible(true);
   };
 
@@ -66,9 +72,9 @@ const Mechanic = () => {
           >
             Add Mechanic Summary
           </Button>
-          <Button type="primary" className="bg-green-500 ml-3 text-white">
-            Daily Report
-          </Button>
+          <ExportDailyExcel data={data?.mechanics}>
+            <h3>Daily Report</h3>
+          </ExportDailyExcel>
         </div>
       </div>
 

@@ -1,11 +1,15 @@
 import { Button, Collapse, Divider, Form, Input, Modal, Spin } from "antd";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useCreatePurchaseMutation } from "../../app/services/workshop/purchase";
+import {
+  useCreatePurchaseMutation,
+  useGetPurchasesQuery,
+} from "../../app/services/workshop/purchase";
 import PurchaseTable from "../../components/workshop/purchase-table";
 import PartsInput from "../../components/workshop/purchase_items";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
+import ExportDailyExcel from "../../utils/excel-daily-downloader";
 
 const { Panel } = Collapse;
 
@@ -16,6 +20,8 @@ const Purchase = () => {
   const [workingGearsAndTools, setWorkingGearsAndTools] = useState([]);
   // const [purchaseReturnScrap, setPurchaseReturnScrap] = useState([]);
   const [createPurchase, { isLoading }] = useCreatePurchaseMutation();
+  const { data } = useGetPurchasesQuery();
+  console.log(data);
 
   const handleSubmit = async (values) => {
     const formattedValues = {
@@ -58,9 +64,9 @@ const Purchase = () => {
           >
             Add Purchase Summary
           </Button>
-          <Button type="primary" className="bg-green-500 ml-3 text-white">
-            Daily Report
-          </Button>
+          <ExportDailyExcel data={data?.purchase}>
+            <h3>Daily Report</h3>
+          </ExportDailyExcel>
         </div>
 
         <Modal

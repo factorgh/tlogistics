@@ -1,13 +1,21 @@
 import { Button, DatePicker, Divider, Form, Input, Radio, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { useState } from "react";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useCreateShipmentMutation } from "../../app/services/shipment/shipment";
+import { useUpdateShipmentMutation } from "../../app/services/shipment/shipment";
 
-const CreateShipmentForm = () => {
+const UpdateShipmentForm = () => {
   const [form] = Form.useForm();
-  const [createShipment, { isLoading }] = useCreateShipmentMutation();
-  const [packages, setPackages] = useState([{}]); // Initialize with one empty package
+
+  const [packages, setPackages] = useState([{}]);
+
+  const { state } = useLocation();
+  const shipment = state?.shipment;
+  console.log(shipment);
+  const [updateShipment, { isLoading }] = useUpdateShipmentMutation();
+  const navigate = useNavigate();
 
   const handlePackageChange = (index, key, value) => {
     const newPackages = [...packages];
@@ -47,15 +55,65 @@ const CreateShipmentForm = () => {
     console.log(transformedValues);
 
     try {
-      await createShipment(transformedValues).unwrap();
-      toast.success("Shipment created successfully");
+      await updateShipment({
+        id: shipment.id,
+        shipmentData: transformedValues,
+      }).unwrap();
+      toast.success("Shipment updated successfully");
       form.resetFields();
+      navigate(-1);
       setPackages([{}]);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to create shipment");
+      toast.error("Failed to update shipment");
     }
   };
+
+  // Update section
+
+  useEffect(() => {
+    if (shipment) {
+      // Set initial form values from shipment
+      form.setFieldsValue({
+        date: shipment.date ? moment(shipment.date) : null,
+        delivery_date: shipment.delivery_date
+          ? moment(shipment.delivery_date)
+          : null,
+        delivery_address: shipment.delivery_address,
+        pickup_person_name: shipment.pickup_person_name,
+        pickup_person_phone: shipment.pickup_person_phone,
+        pickup_address: shipment.pickup_address,
+        driver_name: shipment.driver_name,
+        driver_phone: shipment.driver_phone,
+        driver_vehicle: shipment.driver_vehicle,
+        vendor_name: shipment.vendor_name,
+        vendor_memo_number: shipment.vendor_memo_number,
+        vendor_commission: shipment.vendor_commission,
+        vendor_cash: shipment.vendor_cash,
+        vendor_advance: shipment.vendor_advance,
+        vendor_total: shipment.vendor_total,
+        charge_transportation: shipment.charge_transportation,
+        charge_handling: shipment.charge_handling,
+        charge_halting: shipment.charge_halting,
+        charge_insurance: shipment.charge_insurance,
+        charge_cartage: shipment.charge_cartage,
+        charge_overweight: shipment.charge_overweight,
+        charge_odc: shipment.charge_odc,
+        charge_tax_percent: shipment.charge_tax_percent,
+        charge_discount: shipment.charge_discount,
+        notes: shipment.notes,
+        remarks: shipment.remarks,
+        bill_to: shipment.bill_to,
+        status: shipment.status,
+        load_type: shipment.load_type,
+      });
+
+      // Set initial packages if available
+      if (shipment.packages && shipment.packages.length > 0) {
+        setPackages(shipment.packages);
+      }
+    }
+  }, [shipment, form]);
 
   return (
     <Form onFinish={handleSubmit} layout="vertical" form={form}>
@@ -64,7 +122,7 @@ const CreateShipmentForm = () => {
           <Form.Item name="date" label="Shipment Date">
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="delivery_time" label="Expected Delivery Date">
+          <Form.Item name="delivery_date" label="Expected Delivery Date">
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>
         </div>
@@ -297,4 +355,4 @@ const CreateShipmentForm = () => {
   );
 };
 
-export default CreateShipmentForm;
+export default UpdateShipmentForm;

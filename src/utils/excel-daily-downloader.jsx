@@ -1,15 +1,16 @@
 /* eslint-disable react/prop-types */
 import { Button } from "antd";
+import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 
-const ExportDailyExcel = ({ data }) => {
+const ExportDailyExcel = ({ data, children }) => {
   // Function to filter data based on the current date
   const getCurrentDayData = () => {
     const currentDate = new Date();
     const today = currentDate.toISOString().split("T")[0]; // Format YYYY-MM-DD
 
     return data.filter((item) => {
-      const itemDate = new Date(item.date).toISOString().split("T")[0];
+      const itemDate = new Date(item.createdAt).toISOString().split("T")[0];
       return itemDate === today;
     });
   };
@@ -20,7 +21,7 @@ const ExportDailyExcel = ({ data }) => {
 
     // Check if there's any data to export
     if (currentData.length === 0) {
-      alert("No data available for today.");
+      toast.error("No data available for the current day");
       return;
     }
 
@@ -38,8 +39,8 @@ const ExportDailyExcel = ({ data }) => {
   };
 
   return (
-    <Button type="primary" onClick={exportToExcel}>
-      Download Daily Report
+    <Button className="bg-green-500 ml-3 text-white" onClick={exportToExcel}>
+      {children}
     </Button>
   );
 };

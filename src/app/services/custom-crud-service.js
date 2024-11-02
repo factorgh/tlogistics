@@ -6,7 +6,7 @@ export const crudService = (url) => ({
   }),
   update: ({ id, data }) => ({
     url: `${url}/single/${id}`,
-    method: "DELETE",
+    method: "PUT",
     body: data,
   }),
   delete: (id) => ({

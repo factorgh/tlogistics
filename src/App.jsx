@@ -23,6 +23,7 @@ import RentalsVehicle from "./pages/others/rentals-vehicle.jsx";
 import VehicleRegistration from "./pages/others/vehicle-registration.jsx";
 import PriceList from "./pages/price-list.jsx";
 import ShipmentDetailPage from "./pages/shipment-detail.jsx";
+import ShipmentUpdate from "./pages/shipment-update.jsx";
 import Shipment from "./pages/shipment.jsx";
 import SignUpPage from "./pages/sign-up.jsx";
 import SingleStaff from "./pages/single-staff.jsx";
@@ -49,6 +50,7 @@ function App() {
             <Route path="/main" element={<Layout />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="create-shipment" element={<CreateShipment />} />
+              <Route path="update-shipment" element={<ShipmentUpdate />} />
 
               <Route path="list-customer" element={<ListCustomers />} />
               <Route path="create-quote" element={<CreateQuote />} />
