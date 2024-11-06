@@ -1,5 +1,16 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Table,
+} from "antd";
+import moment from "moment";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdEyeOff, IoMdTrash } from "react-icons/io";
@@ -10,6 +21,7 @@ import Swal from "sweetalert2";
 import {
   useDeleteStaffMutation,
   useGetStaffsQuery,
+  useUpdateStaffMutation,
 } from "../../app/services/staff/staff";
 
 const StaffListTable = () => {
@@ -18,8 +30,13 @@ const StaffListTable = () => {
   const searchInput = useRef(null);
   const { data, isFetching } = useGetStaffsQuery();
   const [deleteStaff] = useDeleteStaffMutation();
+  const [updateStaff, { isLoading, error }] = useUpdateStaffMutation();
   const navigate = useNavigate();
-  console.log(data?.users);
+  const [form] = Form.useForm();
+
+  // Modal state
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editStaffData, setEditStaffData] = useState(null);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -48,9 +65,61 @@ const StaffListTable = () => {
         toast.success("Staff deleted successfully");
       } catch (error) {
         console.error(error);
-        toast.error("Failed to delete vendor");
+        toast.error("Failed to delete staff");
       }
     }
+  };
+
+  const handleSubmit = async (values) => {
+    console.log(values);
+    const formattedValues = {
+      ...values,
+      start_date: values.start_date.$d,
+    };
+    // Send data to endpoint
+    try {
+      const response = await updateStaff(formattedValues);
+      console.log(response);
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success("Staff Created Successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error(error?.data?.message);
+    }
+
+    console.log("Form Values:", formattedValues);
+  };
+
+  const showEditModal = (staff) => {
+    console.log(staff);
+    setEditStaffData(staff);
+    form.setFieldsValue({
+      name: staff.name,
+      position: staff.position,
+      start_date: staff.start_date ? moment(staff.start_date) : null, // Assuming start_date is in a suitable format
+      username: staff.username,
+      emergency_name: staff.emergency_name,
+      emergency_number: staff.emergency_number,
+      email: staff.email,
+      id_card_number: staff.id_card_number,
+      id_card_type: staff.id_card_type,
+      phone: staff.phone,
+      employee_address: staff.employee_address,
+      status: staff.status,
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    // Handle the save action here (e.g., update staff)
+    setIsModalVisible(false);
+    setEditStaffData(null);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setEditStaffData(null);
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -172,11 +241,7 @@ const StaffListTable = () => {
               navigate("/main/staff-detail", { state: { staffId: record.id } })
             }
           />
-          <MdEdit
-            onClick={() =>
-              navigate("/main/staff-detail", { state: { staffId: record.id } })
-            }
-          />
+          <MdEdit onClick={() => showEditModal(record)} />
           <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
         </div>
       ),
@@ -184,14 +249,182 @@ const StaffListTable = () => {
   ];
 
   return (
-    <Table
-      pagination={{ defaultPageSize: 8, showSizeChanger: false }}
-      loading={isFetching}
-      columns={columns}
-      dataSource={data?.users}
-      scroll={{ x: 1000 }}
-      className="border border-slate-200 rounded-md"
-    />
+    <>
+      <Table
+        pagination={{ defaultPageSize: 8, showSizeChanger: false }}
+        loading={isFetching}
+        columns={columns}
+        dataSource={data?.users}
+        scroll={{ x: 1000 }}
+        className="border border-slate-200 rounded-md"
+      />
+      <Modal
+        title="Edit Staff"
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Edit"
+        cancelText="Close"
+        cancelButtonProps={{
+          style: { backgroundColor: "#858796", color: "white" },
+        }}
+        confirmLoading={isLoading}
+      >
+        {editStaffData && (
+          <div>
+            <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
+              <div>
+                <Divider />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Form.Item
+                      label="Name"
+                      name="name"
+                      rules={[
+                        { required: true, message: "Please enter your name" },
+                      ]}
+                    >
+                      <Input placeholder="Enter your name" />
+                    </Form.Item>
+                    <Form.Item label="Select Position" name="position">
+                      <Select defaultValue="admin">
+                        <Select.Option value="admin">Admin</Select.Option>
+                        <Select.Option value="employee">Employee</Select.Option>
+                        <Select.Option value="transport">
+                          Transport Manager
+                        </Select.Option>
+                        <Select.Option value="warehouse">
+                          Warehouse Manager
+                        </Select.Option>
+                      </Select>
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Starting Date"
+                      name="start_date"
+                      rules={[
+                        { required: true, message: "Please select a date" },
+                      ]}
+                    >
+                      <DatePicker style={{ width: "100%" }} />
+                    </Form.Item>
+                    <Form.Item
+                      label="Username"
+                      name="username"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your username",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Username" />
+                    </Form.Item>
+                    <Form.Item
+                      label="Emergency Name"
+                      name="emergency_name"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your emergency name",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Emergency Name" />
+                    </Form.Item>
+                    <Form.Item
+                      label="Emergency Number"
+                      name="emergency_number"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your emergency number",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Emergency number" />
+                    </Form.Item>
+                  </div>
+                  <div>
+                    <Form.Item
+                      label="Email"
+                      name="email"
+                      rules={[
+                        { required: true, message: "Please enter your email" },
+                      ]}
+                    >
+                      <Input placeholder="Email" />
+                    </Form.Item>
+                    <Form.Item
+                      label="ID Card Number"
+                      name="id_card_number"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your ID card number",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="ID Card Number" />
+                    </Form.Item>
+                    <Form.Item
+                      label="ID Card Type"
+                      name="id_card_type"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your ID card type",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="ID Card Type" />
+                    </Form.Item>
+                    <Form.Item
+                      label="Phone Number"
+                      name="phone"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your phone number",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Phone Number" />
+                    </Form.Item>
+                    <Form.Item
+                      label="Employee Address"
+                      name="employee_address"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your address",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Employee Address" />
+                    </Form.Item>
+                    <Form.Item
+                      label="Status"
+                      name="status"
+                      rules={[
+                        { required: true, message: "Please enter your status" },
+                      ]}
+                    >
+                      <Input placeholder="Status" />
+                    </Form.Item>
+                  </div>
+                </div>
+              </div>
+              {/* {isLoading && (
+                <div style={{ textAlign: "center", marginTop: 20 }}>
+                  <Spin />
+                </div>
+              )} */}
+            </Form>
+          </div>
+        )}
+      </Modal>
+    </>
   );
 };
 

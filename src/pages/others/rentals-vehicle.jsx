@@ -1,8 +1,11 @@
 import { Button, Form, Input, Modal, Select, Spin } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
-import { useCreateRentalMutation } from "../../app/services/rental/rental";
+import {
+  useCreateRentalMutation,
+  useUpdateRentalMutation,
+} from "../../app/services/rental/rental";
 import RentalTable from "../../components/others/financial-assets/rental-table";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
@@ -11,62 +14,78 @@ const RentalsVehicle = () => {
   const [form] = Form.useForm();
   const [rentalEntries, setRentalEntries] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editRentalData, setEditRentalData] = useState(null);
 
   const [createRental, { isLoading }] = useCreateRentalMutation();
+  const [updateRental, { isLoading: isUpdating }] = useUpdateRentalMutation();
 
   // Dummy data for initial rendering
-  useEffect(() => {
-    const dummyData = [
-      {
-        agentName: "Agent Smith",
-        leasingOptions: "Short Term",
-        vehicleType: "Truck",
-        driverName: "John Doe",
-      },
-      {
-        agentName: "Agent Johnson",
-        leasingOptions: "Long Term",
-        vehicleType: "Salon Car",
-        driverName: "Jane Doe",
-      },
-    ];
-    setRentalEntries(dummyData);
-  }, []);
+
+  const openModal = () => {
+    setIsModalVisible(true); // Open modal
+    setIsEditMode(false); // Reset to Add mode
+    form.resetFields(); // Clear form fields for new entry
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setIsEditMode(false);
+    setEditRentalData(null);
+  };
+
+  // Show the modal for editing
+  const openEditModal = (entry) => {
+    setIsModalVisible(true);
+    setIsEditMode(true);
+    setEditRentalData(entry);
+    form.setFieldsValue({
+      agent_name: entry.agentName,
+      leasing: entry.leasingOptions,
+      vehicle_type: entry.vehicleType,
+      driver_name: entry.driverName,
+    });
+  };
 
   const onFinish = async (values) => {
     try {
-      const response = await createRental(values).unwrap();
-      console.log(response);
-      toast.success("Rental Created Successfully");
-      setRentalEntries([...rentalEntries, values]);
-      form.resetFields();
+      if (isEditMode) {
+        // Update rental entry
+        const updatedEntry = await updateRental({
+          id: editRentalData.id,
+          ...values,
+        }).unwrap();
+        toast.success("Rental Updated Successfully");
+        const updatedEntries = rentalEntries.map((entry) =>
+          entry.id === updatedEntry.id ? updatedEntry : entry
+        );
+        setRentalEntries(updatedEntries);
+      } else {
+        // Create new rental entry
+        const newEntry = await createRental(values).unwrap();
+        toast.success("Rental Created Successfully");
+        setRentalEntries([...rentalEntries, newEntry]);
+      }
       setIsModalVisible(false);
+      form.resetFields();
     } catch (error) {
-      toast.error(error.data.message);
+      toast.error(error?.data?.message || "Failed to process the rental entry");
       setIsModalVisible(false);
     }
   };
 
-  const openModal = () => {
-    setIsModalVisible(true); // Open modal
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false); // Close modal
-  };
-
   return (
     <CustomLayout>
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between">
         <CustomHeader headerTitle="Rental Vehicles" />
         <Button type="primary" onClick={openModal}>
           Add New Rental
         </Button>
       </div>
 
-      {/* Ant Design Modal for adding a rental vehicle */}
+      {/* Ant Design Modal for adding/editing a rental vehicle */}
       <Modal
-        title="Add Rental Vehicle"
+        title={isEditMode ? "Edit Rental Vehicle" : "Add Rental Vehicle"} // Dynamic title
         open={isModalVisible}
         onCancel={closeModal}
         footer={null}
@@ -126,8 +145,8 @@ const RentalsVehicle = () => {
           </Form.Item>
 
           <Form.Item>
-            {isLoading ? (
-              <Button className="w-full" htmlType="submit">
+            {isLoading || isUpdating ? (
+              <Button className="w-full" htmlType="submit" disabled>
                 <Spin />
               </Button>
             ) : (
@@ -140,7 +159,7 @@ const RentalsVehicle = () => {
       </Modal>
 
       {/* Rental Table */}
-      <RentalTable />
+      <RentalTable rentalEntries={rentalEntries} onEdit={openEditModal} />
     </CustomLayout>
   );
 };

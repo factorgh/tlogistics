@@ -3,45 +3,21 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
-import { useGetMechanicsQuery } from "../../app/services/workshop/mechanic";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import {
+  useDeleteMechanicMutation,
+  useGetMechanicsQuery,
+} from "../../app/services/workshop/mechanic";
 
 // Professional dummy data for the table
-const data = [
-  {
-    key: "1",
-    "Vehicle No.": "AB1234CD",
-    "Vehicle Type": "Truck",
-    driver: "John Doe",
-    truck: "FreightMaster 3000",
-  },
-  {
-    key: "2",
-    "Vehicle No.": "EF5678GH",
-    "Vehicle Type": "Van",
-    driver: "Jane Smith",
-    truck: "CargoMax 250",
-  },
-  {
-    key: "3",
-    "Vehicle No.": "IJ9101KL",
-    "Vehicle Type": "Truck",
-    driver: "Sam Brown",
-    truck: "HeavyHauler 500",
-  },
-  {
-    key: "4",
-    "Vehicle No.": "MN2345OP",
-    "Vehicle Type": "SUV",
-    driver: "Emma Green",
-    truck: "UrbanCourier X",
-  },
-];
 
 const MechanicTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const { data: mechData, isFetching } = useGetMechanicsQuery();
+  const [deleteMechanic] = useDeleteMechanicMutation();
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -52,6 +28,27 @@ const MechanicTable = () => {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
+  };
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this mechanic activity?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteMechanic(id).unwrap();
+        toast.success("Mechanic Activity deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete mechanic activity");
+      }
+    }
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -165,9 +162,9 @@ const MechanicTable = () => {
       dataIndex: "",
       key: "action",
       width: 100,
-      render: () => (
+      render: (_, record) => (
         <a>
-          <IoMdTrash color="red" />
+          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
         </a>
       ),
     },

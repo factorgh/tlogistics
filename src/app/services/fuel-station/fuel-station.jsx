@@ -12,8 +12,8 @@ export const FuelStationApi = baseApi.injectEndpoints({
         invalidatesTags: ["fuel_station"],
       }),
       updateFuelStation: builder.mutation({
-        query: ({ id, vendorData }) =>
-          FuelStationCrud.update({ id, data: vendorData }),
+        query: ({ id, fuelData }) =>
+          FuelStationCrud.update({ id, data: fuelData }),
         invalidatesTags: ["fuel_station"],
       }),
       deleteFuelStation: builder.mutation({

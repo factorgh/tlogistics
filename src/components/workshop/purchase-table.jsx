@@ -3,6 +3,9 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { useDeletePurchaseMutation } from "../../app/services/workshop/purchase";
 
 // Sample data for demonstration
 const data = [
@@ -28,6 +31,7 @@ const PurchaseTable = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const [deletePurchase] = useDeletePurchaseMutation();
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -38,6 +42,27 @@ const PurchaseTable = () => {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
+  };
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this purchase activity?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deletePurchase(id).unwrap();
+        toast.success("Transport Forklift deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete  transport");
+      }
+    }
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -142,9 +167,9 @@ const PurchaseTable = () => {
       dataIndex: "",
       key: "action",
       width: 100,
-      render: () => (
+      render: (_, record) => (
         <a>
-          <IoMdTrash color="red" />
+          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
         </a>
       ),
     },

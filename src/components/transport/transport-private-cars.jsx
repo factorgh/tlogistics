@@ -1,9 +1,27 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
-import { Edit } from "lucide-react";
+import {
+  Button,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Spin,
+  Table,
+} from "antd";
+import TextArea from "antd/es/input/TextArea";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { useGetPrivateTransportsQuery } from "../../app/services/transport/transport";
+import { IoMdTrash } from "react-icons/io";
+import { MdEdit } from "react-icons/md";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import {
+  useDeleteTransportMutation,
+  useGetPrivateTransportsQuery,
+  useUpdateTransportMutation,
+} from "../../app/services/transport/transport";
 
 const TransportPrivateTable = () => {
   const [searchText, setSearchText] = useState("");
@@ -11,6 +29,12 @@ const TransportPrivateTable = () => {
   const searchInput = useRef(null);
   const { data, isFetching } = useGetPrivateTransportsQuery();
   console.log(data);
+  const [updateTransport, { isLoading, error }] = useUpdateTransportMutation();
+  const [deleteTransport] = useDeleteTransportMutation();
+  const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editTransportData, setEditTrasnportData] = useState(null);
+  const [editTransportId, setEditTransportId] = useState(null);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -21,6 +45,82 @@ const TransportPrivateTable = () => {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
+  };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setEditTrasnportData(null);
+  };
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this transport?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteTransport(id).unwrap();
+        toast.success("Transport private cars deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete  transport");
+      }
+    }
+  };
+
+  /*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Displays the edit modal with pre-filled transport data.
+   *
+   * @param {Object} transport - The transport object containing data to be edited.
+   * @param {string} transport.vehicle_number - The vehicle number.
+   * @param {string} transport.driver_management - The driver management details.
+   * @param {string} transport.vehicle_type - The type of vehicle.
+   * @param {string} transport.truck_assistant - The truck assistant details.
+   * @param {Date} transport.registration_expiring_date - The registration expiry date.
+   * @param {Date} transport.insurance_expiring_date - The insurance expiry date.
+   * @param {string} transport.route_optimization - The route optimization details.
+   */
+  /******  53b0cb0b-ba28-4696-a800-3be2b27b1187  *******/
+  const showEditModal = (transport) => {
+    console.log(transport);
+    setEditTrasnportData(transport);
+    setEditTransportId(transport.id);
+    form.setFieldsValue({
+      vehicle_number: transport.vehicle_number,
+      driver_management: transport.driver_management,
+      vehicle_type: transport.vehicle_type,
+      truck_assistant: transport.truck_assistant,
+      registration_expiring_date: transport.registration_expiring_date,
+      insurance_expiring_date: transport.insurance_expiring_date,
+      route_optimization: transport.route_optimization,
+    });
+
+    setIsModalVisible(true);
+  };
+
+  const handleSubmit = async (values) => {
+    console.log(values);
+
+    try {
+      const response = await updateTransport({
+        id: editTransportId,
+        transportData: values,
+      });
+      console.log(response);
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success("Transport Private Updated Successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error(error?.data?.message);
+    }
+
+    console.log("Form Values:", values);
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -155,23 +255,98 @@ const TransportPrivateTable = () => {
       dataIndex: "",
       key: "action",
       width: 100,
-      render: () => (
-        <a>
-          <Edit color="red" />
-        </a>
+      render: (_, record) => (
+        <div className="flex gap-3">
+          {/* <IoMdEyeOff /> */}
+
+          <MdEdit onClick={() => showEditModal(record)} />
+          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+        </div>
       ),
     },
     // Add more columns as needed
   ];
 
   return (
-    <Table
-      loading={isFetching}
-      columns={columns}
-      dataSource={data?.transports}
-      scroll={{ x: 1000 }} // Enable horizontal scrolling
-      className="border border-slate-200 rounded-md"
-    />
+    <>
+      <Table
+        loading={isFetching}
+        columns={columns}
+        dataSource={data?.transports}
+        scroll={{ x: 1000 }} // Enable horizontal scrolling
+        className="border border-slate-200 rounded-md"
+      />
+      <Modal
+        title="Edit Beverage Transport"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        {editTransportData && (
+          <div>
+            <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
+              <div>
+                <Divider />
+                <div className="grid grid-cols-2 gap-3">
+                  <Form.Item label="Vehicle Number" name={"vehicle_number"}>
+                    <Input />
+                  </Form.Item>
+                  <Form.Item label="Vehicle Type" name={"vehicle_type"}>
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="Driver Management"
+                    name={"driver_management"}
+                  >
+                    <Select>
+                      <Select.Option value="demo">Demo</Select.Option>
+                      {/* Add more options as needed */}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item label="Truck Assistant" name={"truck_assistant"}>
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Registration Exp. Date"
+                    name={"registration_expiring_date"}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="Insurance Exp. Date"
+                    name={"insurance_expiring_date"}
+                  >
+                    <Input />
+                  </Form.Item>
+                </div>
+                <h5>Route Optimization</h5>
+                <Form.Item name="route_optimization" noStyle>
+                  <TextArea rows={4} />
+                </Form.Item>
+              </div>
+
+              <div>
+                {isLoading ? (
+                  <Button className="w-full mt-3" htmlType="submit">
+                    <Spin />
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full mt-3"
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    Submit
+                  </Button>
+                )}
+              </div>
+            </Form>
+          </div>
+        )}
+      </Modal>
+    </>
   );
 };
 

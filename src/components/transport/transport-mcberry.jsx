@@ -1,47 +1,28 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import {
+  Button,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Spin,
+  Table,
+} from "antd";
+import TextArea from "antd/es/input/TextArea";
+
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { IoMdTrash } from "react-icons/io";
-import { useGetMcBerryTransportsQuery } from "../../app/services/transport/transport";
-
-const data = [
-  {
-    key: "1",
-    "Vehicle No.": "DL01HB1234",
-    "Vehicle Type": "Refrigerated Truck",
-    driver: "Sam Green",
-    truck: "McBerry Truck A",
-  },
-  {
-    key: "2",
-    "Vehicle No.": "DL01XC5678",
-    "Vehicle Type": "LCV",
-    driver: "Lisa White",
-    truck: "McBerry Truck B",
-  },
-  {
-    key: "3",
-    "Vehicle No.": "DL02EF9101",
-    "Vehicle Type": "28Ft Open Truck",
-    driver: "Daniel Black",
-    truck: "McBerry Truck C",
-  },
-  {
-    key: "4",
-    "Vehicle No.": "DL02GH2345",
-    "Vehicle Type": "Refrigerated Truck",
-    driver: "Sophia Blue",
-    truck: "McBerry Truck D",
-  },
-  {
-    key: "5",
-    "Vehicle No.": "DL02JK6789",
-    "Vehicle Type": "LCV",
-    driver: "Max Grey",
-    truck: "McBerry Truck E",
-  },
-];
+import { MdEdit } from "react-icons/md";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import {
+  useDeleteTransportMutation,
+  useGetMcBerryTransportsQuery,
+  useUpdateTransportMutation,
+} from "../../app/services/transport/transport";
 
 const TransportMcBerryTable = () => {
   const [searchText, setSearchText] = useState("");
@@ -49,6 +30,13 @@ const TransportMcBerryTable = () => {
   const searchInput = useRef(null);
   const { data: mcberryTransports, isFetching } =
     useGetMcBerryTransportsQuery();
+  const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editTransportData, setEditTrasnportData] = useState(null);
+  const [editTransportId, setEditTransportId] = useState(null);
+
+  const [updateTransport, { isLoading, error }] = useUpdateTransportMutation();
+  const [deleteTransport] = useDeleteTransportMutation();
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -59,6 +47,70 @@ const TransportMcBerryTable = () => {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setEditTrasnportData(null);
+  };
+
+  const showEditModal = (transport) => {
+    console.log(transport);
+    setEditTrasnportData(transport);
+    setEditTransportId(transport.id);
+    form.setFieldsValue({
+      vehicle_number: transport.vehicle_number,
+      driver_management: transport.driver_management,
+      vehicle_type: transport.vehicle_type,
+      truck_assistant: transport.truck_assistant,
+      registration_expiring_date: transport.registration_expiring_date,
+      insurance_expiring_date: transport.insurance_expiring_date,
+      route_optimization: transport.route_optimization,
+    });
+
+    setIsModalVisible(true);
+  };
+
+  // HANDLE UPDATE SUBMISSION
+  const handleSubmit = async (values) => {
+    console.log(values);
+
+    try {
+      const response = await updateTransport({
+        id: editTransportId,
+        transportData: values,
+      });
+      console.log(response);
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success("Transport Beverage Updated Successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error(error?.data?.message);
+    }
+
+    console.log("Form Values:", values);
+  };
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this transport?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteTransport(id).unwrap();
+        toast.success("Transport mcberry deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete transport mcberry");
+      }
+    }
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -194,21 +246,96 @@ const TransportMcBerryTable = () => {
       dataIndex: "",
       key: "action",
       width: 100,
-      render: () => (
-        <a>
-          <IoMdTrash color="red" />
-        </a>
+      render: (_, record) => (
+        <div className="flex gap-3">
+          {/* <IoMdEyeOff /> */}
+
+          <MdEdit onClick={() => showEditModal(record)} />
+          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+        </div>
       ),
     },
   ];
   return (
-    <Table
-      loading={isFetching}
-      columns={columns}
-      dataSource={mcberryTransports?.transports}
-      scroll={{ x: 1000 }}
-      className="border border-slate-200 rounded-md"
-    />
+    <>
+      <Table
+        loading={isFetching}
+        columns={columns}
+        dataSource={mcberryTransports?.transports}
+        scroll={{ x: 1000 }}
+        className="border border-slate-200 rounded-md"
+      />
+      <Modal
+        title="Edit Beverage Transport"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        {editTransportData && (
+          <div>
+            <Form onFinish={handleSubmit} layout={"vertical"} form={form}>
+              <div>
+                <Divider />
+                <div className="grid grid-cols-2 gap-3">
+                  <Form.Item label="Vehicle Number" name={"vehicle_number"}>
+                    <Input />
+                  </Form.Item>
+                  <Form.Item label="Vehicle Type" name={"vehicle_type"}>
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="Driver Management"
+                    name={"driver_management"}
+                  >
+                    <Select>
+                      <Select.Option value="demo">Demo</Select.Option>
+                      {/* Add more options as needed */}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item label="Truck Assistant" name={"truck_assistant"}>
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Registration Exp. Date"
+                    name={"registration_expiring_date"}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="Insurance Exp. Date"
+                    name={"insurance_expiring_date"}
+                  >
+                    <Input />
+                  </Form.Item>
+                </div>
+                <h5>Route Optimization</h5>
+                <Form.Item name="route_optimization" noStyle>
+                  <TextArea rows={4} />
+                </Form.Item>
+              </div>
+
+              <div>
+                {isLoading ? (
+                  <Button className="w-full mt-3" htmlType="submit">
+                    <Spin />
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full mt-3"
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    Submit
+                  </Button>
+                )}
+              </div>
+            </Form>
+          </div>
+        )}
+      </Modal>
+    </>
   );
 };
 

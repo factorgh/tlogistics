@@ -1,55 +1,122 @@
-import { Button, DatePicker, Modal, Table } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Spin,
+  Table,
+} from "antd";
+import moment from "moment";
 import { useState } from "react";
+import { IoMdTrash } from "react-icons/io";
+import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import {
   useCreateRegistrationMutation,
+  useDeleteRegistrationMutation,
   useGetRegistrationsQuery,
+  useUpdateRegistrationMutation,
 } from "../../app/services/registration/registration";
 import CustomHeader from "../../core/custom-header";
 import CustomLayout from "../../core/custom-layout";
 
-import { Form, Input, InputNumber, Select, Spin } from "antd";
-import moment from "moment";
-
 const VehicleRegistration = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editRegistrationData, setEditRegistrationData] = useState(null);
+  const [deleterRegistration] = useDeleteRegistrationMutation();
+  const [form] = Form.useForm();
 
-  const [createRegistration, { isLoading }] = useCreateRegistrationMutation();
+  const [createRegistration, { isLoading: isCreating }] =
+    useCreateRegistrationMutation();
+  const [updateRegistration, { isLoading: isUpdating }] =
+    useUpdateRegistrationMutation();
   const { data, isFetching } = useGetRegistrationsQuery();
-  console.log(data?.vehicleRegistration);
 
-  // Function to show modal
+  // Show modal for adding a new registration
   const showModal = () => {
     setIsModalVisible(true);
+    setIsEditMode(false);
+    form.resetFields();
   };
 
-  // Function to handle modal cancel
+  // Show modal for editing an existing registration
+  const showEditModal = (registration) => {
+    setIsModalVisible(true);
+    setIsEditMode(true);
+    setEditRegistrationData(registration);
+    form.setFieldsValue({
+      registration: registration.registration,
+      registration_number: registration.registration_number,
+      number_plate: registration.number_plate,
+      penalty_reduction: registration.penalty_reduction,
+      vehicle_type: registration.vehicle_type,
+      start_date: moment(registration.start_date),
+      expiring_date: moment(registration.expiring_date),
+    });
+  };
+
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsEditMode(false);
+    setEditRegistrationData(null); // Clear edit data
   };
 
-  // Handle form submission
-  const handleFormSubmit = async (entry) => {
-    const transformed_entry = {
-      ...entry,
-      start_date: entry.start_date.$d,
-      expiring_date: entry.expiring_date.$d,
+  // Handle form submission (Add or Update)
+  const handleFormSubmit = async (values) => {
+    const transformedValues = {
+      ...values,
+      start_date: values.start_date.$d,
+      expiring_date: values.expiring_date.$d,
     };
 
     try {
-      console.log("Vehicle entry submitted:", transformed_entry);
-      await createRegistration(transformed_entry);
+      if (isEditMode) {
+        // Update registration
+        await updateRegistration({
+          id: editRegistrationData.id,
+          ...transformedValues,
+        });
+        toast.success("Vehicle Registration Updated Successfully");
+      } else {
+        // Create new registration
+        await createRegistration(transformedValues);
+        toast.success("Vehicle Registered Successfully");
+      }
+
       setIsModalVisible(false);
-      toast.success("Vehicle Registered Successfully");
+      form.resetFields();
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to register vehicle");
+      console.error(error);
+      toast.error("Failed to save vehicle registration");
     }
-    // setVehicleEntries([...vehicleEntries, entry]);
-    setIsModalVisible(false);
   };
 
-  // Table columns
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this vehicle registration?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleterRegistration(id).unwrap();
+        toast.success("Registration deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete registration: " + error.message);
+      }
+    }
+  };
+
   const columns = [
     {
       title: "Vehicle Number",
@@ -74,18 +141,26 @@ const VehicleRegistration = () => {
     {
       title: "Registration Date",
       dataIndex: "start_date",
-      key: "registrationDate",
-      render: (date) => moment(date).format("YYYY-MM-DD"), // or use another format like "MMMM D, YYYY" for a more readable format
+      key: "start_date",
+      render: (date) => moment(date).format("YYYY-MM-DD"),
     },
     {
       title: "Expiry Date",
       dataIndex: "expiring_date",
       key: "expiring_date",
-      render: (date) => moment(date).format("YYYY-MM-DD"), // or other desired format
+      render: (date) => moment(date).format("YYYY-MM-DD"),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <div className="flex gap-3">
+          <MdEdit onClick={() => showEditModal(record)} />
+          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+        </div>
+      ),
     },
   ];
-
-  // Dummy data for initial rendering
 
   return (
     <CustomLayout>
@@ -96,13 +171,17 @@ const VehicleRegistration = () => {
         </Button>
 
         <Modal
-          title="Vehicle Registration Form"
+          title={
+            isEditMode
+              ? "Edit Vehicle Registration"
+              : "Add Vehicle Registration"
+          } // Dynamic title
           visible={isModalVisible}
           onCancel={handleCancel}
           footer={null}
         >
-          <Form layout="vertical" onFinish={handleFormSubmit}>
-            {/* Vehicle Registration */}
+          <Form layout="vertical" form={form} onFinish={handleFormSubmit}>
+            {/* Registration Fields */}
             <Form.Item
               label="Registration"
               name="registration"
@@ -116,7 +195,6 @@ const VehicleRegistration = () => {
               <Input placeholder="Enter Vehicle Registration" />
             </Form.Item>
 
-            {/* Vehicle Registration Number & Plate Type */}
             <Form.Item
               label="Vehicle Registration Number"
               name="registration_number"
@@ -146,7 +224,6 @@ const VehicleRegistration = () => {
               </Select>
             </Form.Item>
 
-            {/* Penalty Reduction */}
             <Form.Item
               label="Penalty Reduction"
               name="penalty_reduction"
@@ -163,7 +240,6 @@ const VehicleRegistration = () => {
               />
             </Form.Item>
 
-            {/* Type of Vehicle Registered */}
             <Form.Item
               label="Type of Vehicle Registered"
               name="vehicle_type"
@@ -180,59 +256,46 @@ const VehicleRegistration = () => {
               </Select>
             </Form.Item>
 
-            {/* Starting & Expiring Date */}
-
             <Form.Item
               label="Start Date"
               name="start_date"
               rules={[
-                {
-                  required: true,
-                  message: "Please select the start date!",
-                },
+                { required: true, message: "Please select the start date!" },
               ]}
             >
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
+
             <Form.Item
               label="Expiring Date"
               name="expiring_date"
               rules={[
-                {
-                  required: true,
-                  message: "Please select the start date!",
-                },
+                { required: true, message: "Please select the expiring date!" },
               ]}
             >
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
-            {/* Submit Button */}
+
             <Form.Item>
-              <div className="">
-                {isLoading ? (
-                  <Button className="w-full" type="ghost" disabled block>
-                    <Spin />
-                  </Button>
-                ) : (
-                  <Button
-                    className="w-full"
-                    type="primary"
-                    htmlType="submit"
-                    block
-                  >
-                    Submit
-                  </Button>
-                )}
-              </div>
+              <Button
+                className="w-full"
+                type="primary"
+                htmlType="submit"
+                block
+                loading={isCreating || isUpdating}
+              >
+                {isCreating || isUpdating ? <Spin /> : "Submit"}
+              </Button>
             </Form.Item>
           </Form>
         </Modal>
       </div>
+
       <Table
         loading={isFetching}
-        dataSource={data?.vehicleRegistration}
+        dataSource={data?.vehicleRegistration || []}
         columns={columns}
-        rowKey={(record) => record.vehicleNumber}
+        rowKey={(record) => record.registration_number}
         style={{ marginTop: "20px" }}
       />
     </CustomLayout>
