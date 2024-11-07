@@ -12,8 +12,8 @@ export const RentalApi = baseApi.injectEndpoints({
         invalidatesTags: ["rental"],
       }),
       updateRental: builder.mutation({
-        query: ({ id, vendorData }) =>
-          rentalCrud.update({ id, data: vendorData }),
+        query: ({ id, rentalData }) =>
+          rentalCrud.update({ id, data: rentalData }),
         invalidatesTags: ["rental"],
       }),
       deleteRental: builder.mutation({

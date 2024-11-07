@@ -23,19 +23,14 @@ const RentalTable = () => {
   const [isEditMode, setIsEditMode] = useState(false); // To determine if we're in edit mode
   const [form] = Form.useForm();
 
-  const [updateRental, { isLoading }] = useUpdateRentalMutation();
+  const [updateRental, { isLoading, error }] = useUpdateRentalMutation();
   const [deleteRental] = useDeleteRentalMutation();
-
-  // const showModal = () => {
-  //   setIsModalVisible(true);
-  //   setIsEditMode(false); // Reset to "Add" mode when opening modal
-  // };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
-    setEditRentalId(null); // Reset the edit ID
-    setIsEditMode(false); // Ensure we are in "Add" mode on cancel
+    setEditRentalId(null);
+    setIsEditMode(false);
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -50,6 +45,7 @@ const RentalTable = () => {
   };
 
   const showEditModal = (rental) => {
+    console.log(rental);
     setIsEditMode(true);
     setEditRentalId(rental.id); // Set the rental ID for editing
     form.setFieldsValue({
@@ -63,25 +59,19 @@ const RentalTable = () => {
 
   // Handle submit (either update or create a new rental)
   const handleFormSubmit = async (values) => {
+    console.log(values);
     try {
-      if (isEditMode) {
-        // Update rental entry
-        await updateRental({
-          id: editRentalId, // Use the editRentalId to update the correct entry
-          ...values,
-        }).unwrap();
-        toast.success("Rental Updated Successfully");
-      } else {
-        // Create a new rental entry
-        // Assuming createRental is a function you have defined elsewhere (or an API call)
-
-        toast.success("Rental Created Successfully");
-      }
+      // Update rental entry
+      await updateRental({
+        id: editRentalId, // Use the editRentalId to update the correct entry
+        rentalData: { ...values },
+      }).unwrap();
 
       setIsModalVisible(false); // Close modal after submission
-      form.resetFields(); // Reset form fields
+      form.resetFields();
     } catch (error) {
-      toast.error("Failed to save rental entry: " + (error?.message || ""));
+      console.log(error);
+      toast.error("Failed to save rental entry: " + error?.data?.message);
     }
   };
 

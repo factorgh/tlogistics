@@ -1,42 +1,46 @@
 /* eslint-disable react/prop-types */
 import { Button, Form, Input, InputNumber, Spin } from "antd";
 import { useForm } from "antd/es/form/Form";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useCreateTransitMutation } from "../../../app/services/financial-assets/transit";
 
-const TransitAndDemurrageForm = ({ onSubmit }) => {
-  const form = useForm();
+const TransitAndDemurrageForm = ({ onSubmit, initialValues }) => {
+  const [form] = useForm();
 
   const [createTransit, { isLoading }] = useCreateTransitMutation();
+
+  // Set the form values when initialValues changes
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [initialValues, form]);
 
   const handleFormSubmit = async (values) => {
     try {
       await createTransit(values).unwrap();
       toast.success("Transit created successfully");
 
-      onSubmit();
-      form.resetFields();
+      onSubmit(); // Assuming this function handles closing the modal or other actions
+      form.resetFields(); // Reset the form after successful submission
     } catch (error) {
       toast.error(error.data.message);
-      onSubmit();
+      onSubmit(); // Handle failure and close the modal or show error state
     }
   };
 
   return (
-    <Form layout="vertical" onFinish={handleFormSubmit}>
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleFormSubmit}
+      initialValues={initialValues || {}} // Ensure initialValues are passed correctly
+    >
       {/* Job Details */}
       <Form.Item label="Job ID" name="job" rules={[{ required: true }]}>
         <Input placeholder="Enter Job ID" />
       </Form.Item>
-
-      {/* Transit Dates */}
-      {/* <Form.Item
-        label="Transit Dates"
-        name="transitDates"
-        rules={[{ required: true }]}
-      >
-        <RangePicker style={{ width: "100%" }} />
-      </Form.Item> */}
 
       {/* Delay and Demurrage Charges */}
       <Form.Item
@@ -61,20 +65,6 @@ const TransitAndDemurrageForm = ({ onSubmit }) => {
           placeholder="Enter charge per hour"
         />
       </Form.Item>
-
-      {/* Total Charges */}
-      {/* <Form.Item
-        label="Total Demurrage Charge"
-        name="totalDemurrageCharge"
-        rules={[{ required: true }]}
-      >
-        <InputNumber
-          style={{ width: "100%" }}
-          prefix="GHC"
-          placeholder="Total demurrage charge"
-          disabled
-        />
-      </Form.Item> */}
 
       {/* Save Button */}
       <Form.Item>

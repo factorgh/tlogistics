@@ -19,6 +19,7 @@ const RentalsVehicle = () => {
 
   const [createRental, { isLoading }] = useCreateRentalMutation();
   const [updateRental, { isLoading: isUpdating }] = useUpdateRentalMutation();
+  console.log(updateRental);
 
   // Dummy data for initial rendering
 
