@@ -73,27 +73,6 @@ const StaffListTable = () => {
     }
   };
 
-  const handleSubmit = async (values) => {
-    console.log(values);
-    const formattedValues = {
-      ...values,
-      start_date: values.start_date.$d,
-    };
-    // Send data to endpoint
-    try {
-      const response = await updateStaff(formattedValues);
-      console.log(response);
-      form.resetFields();
-      setIsModalVisible(false);
-      toast.success("Staff Created Successfully");
-    } catch (err) {
-      console.log(err);
-      toast.error(error?.data?.message);
-    }
-
-    console.log("Form Values:", formattedValues);
-  };
-
   const showEditModal = (staff) => {
     console.log(staff);
     setEditStaffData(staff);
@@ -114,10 +93,24 @@ const StaffListTable = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
-    // Handle the save action here (e.g., update staff)
-    setIsModalVisible(false);
-    setEditStaffData(null);
+  const handleSubmit = async (values) => {
+    const formattedValues = {
+      ...values,
+      start_date: values.start_date.$d,
+    };
+    console.log(formattedValues);
+    try {
+      await updateStaff({
+        id: editStaffData.id,
+        data: formattedValues,
+      }).unwrap();
+      toast.success("Staff updated successfully");
+      setIsModalVisible(false);
+      form.resetFields();
+    } catch (err) {
+      console.error(err);
+      toast.error(error?.data?.message || "Failed to update staff");
+    }
   };
 
   const handleCancel = () => {
@@ -272,14 +265,14 @@ const StaffListTable = () => {
       <Modal
         title="Edit Staff"
         open={isModalVisible}
-        onOk={handleOk}
+        onOk={form.submit}
         onCancel={handleCancel}
+        confirmLoading={isLoading}
         okText="Edit"
         cancelText="Close"
         cancelButtonProps={{
           style: { backgroundColor: "#858796", color: "white" },
         }}
-        confirmLoading={isLoading}
       >
         {editStaffData && (
           <div>
