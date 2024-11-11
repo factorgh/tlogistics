@@ -1,10 +1,9 @@
-import { Form as AntForm, Button, Input } from "antd";
+import { Form as AntForm, Button, Input, Spin } from "antd";
 import { Field, Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { useLoginUserMutation } from "../../app/services/auth/auth"; // Import the useLoginMutation hook
-import { Spinner } from "../../core/spinner";
 
 const { Item } = AntForm;
 
@@ -106,7 +105,7 @@ const LoginForm = () => {
                 className="w-full flex justify-center items-center"
                 disabled={isSubmitting || isLoading}
               >
-                {isSubmitting || isLoading ? <Spinner /> : "Login"}
+                {isSubmitting || isLoading ? <Spin /> : "Login"}
               </Button>
             </Item>
             <div className="text-center">

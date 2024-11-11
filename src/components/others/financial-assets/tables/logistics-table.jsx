@@ -91,12 +91,14 @@ const LogisticsTable = () => {
       render: (text, record) => (
         <div className="flex gap-3">
           <EditOutlined
+            className="text-blue-500 hover:text-blue-700"
             onClick={() => {
               console.log(record);
               showEditModal(record); // Fix: use showEditModal directly
             }}
           />
           <DeleteOutlined
+            className="text-red-500 hover:text-red-700"
             onClick={() => handleDelete(record.id)} // Fix: use record.id for deletion
             danger
             style={{ marginLeft: "10px" }}

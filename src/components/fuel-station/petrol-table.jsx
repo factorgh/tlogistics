@@ -150,8 +150,12 @@ const PetrolTable = () => {
         <div className="flex gap-3">
           {/* <IoMdEyeOff /> */}
 
-          <EditOutlined onClick={() => showEditModal(record)} />
+          <EditOutlined
+            className="text-blue-500 hover:text-blue-700"
+            onClick={() => showEditModal(record)}
+          />
           <DeleteOutlined
+            className="text-red-500 hover:text-red-700"
             color="red"
             onClick={() => handleDelete(record?.id)}
           />

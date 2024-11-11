@@ -164,6 +164,7 @@ const MechanicTable = () => {
       render: (_, record) => (
         <a>
           <DeleteOutlined
+            className="text-red-500 hover:text-red-700"
             color="red"
             onClick={() => handleDelete(record?.id)}
           />

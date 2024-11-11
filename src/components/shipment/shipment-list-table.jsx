@@ -194,8 +194,14 @@ const ShipmentListTable = () => {
       width: 100,
       render: (_, record) => (
         <a className="flex gap-3">
-          <EyeOutlined onClick={() => goToShipmentDetail(record)} />
-          <EditOutlined onClick={() => goToShipmentUpdate(record)} />
+          <EyeOutlined
+            className="text-gray-500 hover:text-gray-700"
+            onClick={() => goToShipmentDetail(record)}
+          />
+          <EditOutlined
+            className="text-blue-500 hover:text-blue-700"
+            onClick={() => goToShipmentUpdate(record)}
+          />
         </a>
       ),
     },

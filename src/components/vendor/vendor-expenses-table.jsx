@@ -176,6 +176,7 @@ const VendorExpensesTable = () => {
         return (
           <a>
             <DeleteOutlined
+              className="text-red-500 hover:text-red-700"
               color="red"
               onClick={async () => {
                 await deleteVendorExpense(record?.id);

@@ -236,11 +236,12 @@ const VendorListTable = () => {
       render: (_, record) => (
         <div className="flex gap-5">
           <a onClick={() => handleEdit(record)}>
-            <EditOutlined />
+            <EditOutlined className="text-blue-500 hover:text-blue-700" />
           </a>
           <a>
             <DeleteOutlined
               color="red"
+              className="text-red-500 hover:text-red-700"
               onClick={() => handleDelete(record.id)}
             />
           </a>

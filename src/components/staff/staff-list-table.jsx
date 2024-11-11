@@ -240,12 +240,17 @@ const StaffListTable = () => {
       render: (_, record) => (
         <div className="flex gap-3">
           <EyeOutlined
+            className="text-gray-500 hover:text-gray-700"
             onClick={() =>
               navigate("/main/staff-detail", { state: { staffId: record.id } })
             }
           />
-          <EditOutlined onClick={() => showEditModal(record)} />
+          <EditOutlined
+            className="text-blue-500 hover:text-blue-700"
+            onClick={() => showEditModal(record)}
+          />
           <DeleteOutlined
+            className="text-red-500 hover:text-red-700"
             color="red"
             onClick={() => handleDelete(record?.id)}
           />

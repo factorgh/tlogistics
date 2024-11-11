@@ -140,6 +140,7 @@ const CustomerListTable = () => {
       render: (_, record) => (
         <a>
           <EyeOutlined
+            className="text-gray-500 hover:text-gray-700"
             onClick={() =>
               navigate("/main/customer-detail", {
                 state: { customerId: record.id },

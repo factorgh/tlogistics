@@ -127,8 +127,12 @@ const GeneralExpenseTable = () => {
       key: "action",
       render: (text, record) => (
         <div className="flex gap-3">
-          <EditOutlined onClick={() => showEditModal(record)} />
+          <EditOutlined
+            className="text-blue-500 hover:text-blue-700"
+            onClick={() => showEditModal(record)}
+          />
           <DeleteOutlined
+            className="text-red-500 hover:text-red-700"
             onClick={() => handleDelete(record.id)}
             danger
             style={{ marginLeft: "10px" }}

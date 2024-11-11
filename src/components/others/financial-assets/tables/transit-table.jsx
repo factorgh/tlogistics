@@ -102,10 +102,12 @@ const TransitTable = () => {
       render: (_, record) => (
         <Space size="middle">
           <EditOutlined
+            className="text-blue-500 hover:text-blue-700"
             onClick={() => showEditModal(record)}
             style={{ marginLeft: "10px" }}
           />
           <DeleteOutlined
+            className="text-red-500 hover:text-red-700"
             onClick={() => handleDelete(record.id)}
             danger
             style={{ marginLeft: "10px" }}
