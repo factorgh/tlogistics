@@ -11,8 +11,6 @@ import {
 } from "antd";
 import moment from "moment";
 import { useState } from "react";
-import { IoMdTrash } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import {
@@ -20,6 +18,8 @@ import {
   useGetGasStationsQuery,
   useUpdateFuelStationMutation,
 } from "../../app/services/fuel-station/fuel-station";
+
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const GasTable = () => {
   const { data, isFetching } = useGetGasStationsQuery();
@@ -145,6 +145,16 @@ const GasTable = () => {
       title: "Entity",
       dataIndex: "entity",
       key: "entity",
+      render: (entity) => {
+        switch (entity) {
+          case "FOLK_LIFT":
+            return "Forklift";
+          case "FACTORY_AND_HOUSES":
+            return "Factory & Houses";
+          default:
+            return entity;
+        }
+      },
     },
     {
       title: "Action",
@@ -153,8 +163,11 @@ const GasTable = () => {
         <div className="flex gap-3">
           {/* <IoMdEyeOff /> */}
 
-          <MdEdit onClick={() => showEditModal(record)} />
-          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+          <EditOutlined onClick={() => showEditModal(record)} />
+          <DeleteOutlined
+            color="red"
+            onClick={() => handleDelete(record?.id)}
+          />
         </div>
       ),
     },

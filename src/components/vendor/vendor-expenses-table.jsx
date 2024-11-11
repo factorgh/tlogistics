@@ -1,8 +1,7 @@
-import { SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdTrash } from "react-icons/io";
 import { toast } from "react-toastify";
 
 import moment from "moment";
@@ -176,7 +175,7 @@ const VendorExpensesTable = () => {
         // console.log(record.id);
         return (
           <a>
-            <IoMdTrash
+            <DeleteOutlined
               color="red"
               onClick={async () => {
                 await deleteVendorExpense(record?.id);

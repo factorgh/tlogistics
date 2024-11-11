@@ -27,7 +27,7 @@ const ResponsiveChartCard = () => {
   return (
     <div className="p-2 ">
       <Card
-        className="border border-gray-200 rounded-md"
+        className="border border-gray-300 rounded-md shadow-lg"
         title={
           <div style={{ color: "#4786EB", textAlign: "left" }}>
             {" "}

@@ -1,7 +1,8 @@
-import { Button, Card, Divider, Spin } from "antd";
+import { Button, Card, Divider, Spin, Typography } from "antd";
 import { useLocation } from "react-router-dom";
 import { useGetSingleStaffQuery } from "../app/services/staff/staff";
-import Wrapper from "../core/wrapper";
+
+const { Title, Text } = Typography;
 
 const SingleStaff = () => {
   const location = useLocation();
@@ -24,72 +25,80 @@ const SingleStaff = () => {
 
   // If data is available, display the staff details
   return (
-    <Wrapper>
-      <Card className="shadow-md rounded-lg">
-        <div className="grid grid-cols-3 gap-5">
-          <div className="col-span-1 flex items-center justify-center flex-col border border-gray-300 rounded-md p-5 bg-white">
-            <img
-              src={data?.profilePicture || "/images/profile.png"}
-              className="h-32 w-32 rounded-full object-cover"
-              alt={data?.user.name || "Staff Member"}
-            />
-            <h5 className="mt-3 text-2xl font-bold mb-1">
-              {data?.user.name || "Unknown"}
-            </h5>
-            <Button className="rounded-full bg-[#1CC88A] text-white">
-              {data?.user.status || "Active"}
-            </Button>
-            <Divider className="my-3" />
+    <Card className=" rounded-xl p-6 ">
+      <div className="grid grid-cols-3 gap-6">
+        {/* Profile Section */}
+        <div className="col-span-1 flex flex-col items-center p-6  rounded-lg shadow-lg ">
+          <img
+            src={data?.profilePicture || "/images/profile.png"}
+            className="h-32 w-32 rounded-full object-cover mb-4 shadow-md"
+            alt={data?.user.name || "Staff Member"}
+          />
+          <Title level={3} className="text-gray-800">
+            {data?.user.name || "Unknown"}
+          </Title>
+          <Button
+            type="primary"
+            shape="round"
+            style={{ backgroundColor: "#1CC88A", borderColor: "#1CC88A" }}
+            className="mt-2 mb-4"
+          >
+            {data?.user.status || "Active"}
+          </Button>
+          <Divider />
 
-            <div className="text-center">
-              <h3 className="font-semibold">Email</h3>
-              <p className="text-gray-600">
-                {data?.user.email || "No email provided."}
-              </p>
-            </div>
-          </div>
-          <div className="col-span-2 border border-red-900 rounded-md bg-gray-50 p-5">
-            <h3 className="text-lg font-semibold text-gray-800">
-              Staff Details
-            </h3>
-            <Divider />
-            <div className="space-y-3">
-              <p>
-                <strong>Position:</strong> {data?.user.position || "N/A"}
-              </p>
-              <p>
-                <strong>Starting Date:</strong>{" "}
-                {data?.user.start_date
-                  ? new Date(data?.user.start_date).toLocaleDateString()
-                  : "N/A"}
-              </p>
-              <p>
-                <strong>Username:</strong> {data?.user.username || "N/A"}
-              </p>
-              <p>
-                <strong>Emergency Contact:</strong>{" "}
-                {data?.user.emergency_name || "N/A"} (
-                {data?.user.emergency_number || "N/A"})
-              </p>
-              <p>
-                <strong>ID Card:</strong> {data?.user.id_card_type || "N/A"} -{" "}
-                {data?.user.license || "N/A"}
-              </p>
-              <p>
-                <strong>ID Card Number:</strong>{" "}
-                {data?.user.id_card_number || "N/A"} -{" "}
-              </p>
-              <p>
-                <strong>Phone Number:</strong> {data?.user.phone || "N/A"}
-              </p>
-              <p>
-                <strong>Address:</strong> {data?.user.address || "N/A"}
-              </p>
-            </div>
+          <div className="text-center">
+            <Title level={5} className="text-gray-700">
+              Email
+            </Title>
+            <Text className="text-gray-600">
+              {data?.user.email || "No email provided."}
+            </Text>
           </div>
         </div>
-      </Card>
-    </Wrapper>
+
+        {/* Staff Details Section */}
+        <div className="col-span-2 p-6 bg-white rounded-lg shadow-lg ">
+          <Title level={3} className="text-gray-800 mb-3">
+            Staff Details
+          </Title>
+          <Divider />
+          <div className="space-y-4 text-gray-700">
+            <p>
+              <Text strong>Position:</Text> {data?.user.position || "N/A"}
+            </p>
+            <p>
+              <Text strong>Starting Date:</Text>{" "}
+              {data?.user.start_date
+                ? new Date(data?.user.start_date).toLocaleDateString()
+                : "N/A"}
+            </p>
+            <p>
+              <Text strong>Username:</Text> {data?.user.username || "N/A"}
+            </p>
+            <p>
+              <Text strong>Emergency Contact:</Text>{" "}
+              {data?.user.emergency_name || "N/A"} (
+              {data?.user.emergency_number || "N/A"})
+            </p>
+            <p>
+              <Text strong>ID Card:</Text> {data?.user.id_card_type || "N/A"} -{" "}
+              {data?.user.license || "N/A"}
+            </p>
+            <p>
+              <Text strong>ID Card Number:</Text>{" "}
+              {data?.user.id_card_number || "N/A"}
+            </p>
+            <p>
+              <Text strong>Phone Number:</Text> {data?.user.phone || "N/A"}
+            </p>
+            <p>
+              <Text strong>Address:</Text> {data?.user.address || "N/A"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 };
 

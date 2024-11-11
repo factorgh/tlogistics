@@ -4,7 +4,7 @@ import { Button } from "antd";
 const CustomAction = ({ color, onClick, title, icon, bgColor }) => {
   return (
     <Button
-      className="text-sm"
+      className="text-sm shadow-lg"
       color={color}
       variant="solid"
       icon={icon}

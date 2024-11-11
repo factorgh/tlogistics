@@ -1,12 +1,26 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { Button, Divider, Form, Input, Modal, Space, Table } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import {
+  Button,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Space,
+  Table,
+  Upload,
+} from "antd";
 import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdTrash } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import * as XLSX from "xlsx"; // Import xlsx library
 import {
+  useBulkAddVendorsMutation,
   useDeleteVendorMutation,
   useGetVendorsQuery,
   useUpdateVendorMutation,
@@ -21,6 +35,7 @@ const VendorListTable = () => {
   const { data, isFetching, isError } = useGetVendorsQuery();
   const [deleteVendor] = useDeleteVendorMutation();
   const [updateVendor] = useUpdateVendorMutation();
+  const [bulkAddVendors] = useBulkAddVendorsMutation();
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -53,11 +68,10 @@ const VendorListTable = () => {
   };
 
   const handleSubmit = async () => {
-    console.log(currentRecord.id);
     try {
       const values = await form.validateFields();
       await updateVendor({ id: currentRecord.id, vendorData: { ...values } });
-      setCurrentRecord(null); // Clear current record after update
+      setCurrentRecord(null);
       setIsModalVisible(false);
       toast.success("Vendor updated successfully");
     } catch (err) {
@@ -85,6 +99,29 @@ const VendorListTable = () => {
   if (isError) {
     toast.error("Failed to load vendors");
   }
+
+  // Function to handle Excel file upload and parse it
+  const handleFileUpload = async (file) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const parsedData = XLSX.utils.sheet_to_json(sheet);
+
+      // Assuming each row has "name", "email", "phone", and "address" columns
+      try {
+        await bulkAddVendors(parsedData).unwrap(); // Assuming API call
+        toast.success("Vendors uploaded successfully");
+      } catch (error) {
+        console.error("Error uploading vendors:", error);
+        toast.error("Failed to upload vendors");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    return false; // Prevent automatic upload by antd
+  };
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -198,11 +235,14 @@ const VendorListTable = () => {
       width: 100,
       render: (_, record) => (
         <div className="flex gap-5">
-          <a>
-            <IoMdTrash color="red" onClick={() => handleDelete(record.id)} />
-          </a>
           <a onClick={() => handleEdit(record)}>
-            <MdEdit />
+            <EditOutlined />
+          </a>
+          <a>
+            <DeleteOutlined
+              color="red"
+              onClick={() => handleDelete(record.id)}
+            />
           </a>
         </div>
       ),
@@ -211,6 +251,16 @@ const VendorListTable = () => {
 
   return (
     <>
+      <Space style={{ marginBottom: 16 }}>
+        <Upload
+          beforeUpload={handleFileUpload}
+          accept=".xlsx, .xls"
+          showUploadList={false}
+        >
+          <Button icon={<UploadOutlined />}>Bulk Upload Vendors</Button>
+        </Upload>
+      </Space>
+
       <Table
         loading={isFetching}
         dataSource={data?.vendors}

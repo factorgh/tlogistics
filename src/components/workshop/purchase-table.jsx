@@ -1,8 +1,7 @@
-import { SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdTrash } from "react-icons/io";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useDeletePurchaseMutation } from "../../app/services/workshop/purchase";
@@ -169,7 +168,10 @@ const PurchaseTable = () => {
       width: 100,
       render: (_, record) => (
         <a>
-          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+          <DeleteOutlined
+            color="red"
+            onClick={() => handleDelete(record?.id)}
+          />
         </a>
       ),
     },

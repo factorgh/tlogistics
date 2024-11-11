@@ -1,70 +1,10 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import { EditOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, Input, Space, Table, Tag } from "antd";
 import moment from "moment";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdEyeOff } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useGetShipmentsQuery } from "../../app/services/shipment/shipment";
-
-// const data = [
-//   {
-//     key: "1",
-//     "tracking number": "MB123456789",
-//     date: "2024-10-01",
-//     name: "John Doe",
-//     from: "New York, NY",
-//     to: "Los Angeles, CA",
-//     "current location": "Kansas City, MO",
-//     status: "In Transit",
-//     payment: "Paid",
-//   },
-//   {
-//     key: "2",
-//     "tracking number": "MB987654321",
-//     date: "2024-10-02",
-//     name: "Jane Smith",
-//     from: "Chicago, IL",
-//     to: "Houston, TX",
-//     "current location": "St. Louis, MO",
-//     status: "In Transit",
-//     payment: "Unpaid",
-//   },
-//   {
-//     key: "3",
-//     "tracking number": "MB555888333",
-//     date: "2024-10-03",
-//     name: "Michael Johnson",
-//     from: "Miami, FL",
-//     to: "Seattle, WA",
-//     "current location": "Denver, CO",
-//     status: "Delayed",
-//     payment: "Paid",
-//   },
-//   {
-//     key: "4",
-//     "tracking number": "MB666777999",
-//     date: "2024-10-04",
-//     name: "Emily Davis",
-//     from: "Atlanta, GA",
-//     to: "San Francisco, CA",
-//     "current location": "Phoenix, AZ",
-//     status: "Delivered",
-//     payment: "Paid",
-//   },
-//   {
-//     key: "5",
-//     "tracking number": "MB444555666",
-//     date: "2024-10-05",
-//     name: "Chris Brown",
-//     from: "Dallas, TX",
-//     to: "Portland, OR",
-//     "current location": "Salt Lake City, UT",
-//     status: "Out for Delivery",
-//     payment: "Paid",
-//   },
-// ];
 
 const ShipmentListTable = () => {
   const [searchText, setSearchText] = useState("");
@@ -182,12 +122,10 @@ const ShipmentListTable = () => {
       key: "date",
       width: 150,
       ...getColumnSearchProps("date"),
-      render: (text) => {
-        return moment(text).format("YYYY-MM-DD");
-      },
+      render: (text) => moment(text).format("YYYY-MM-DD"),
     },
     {
-      title: "Name",
+      title: "Pick Up Address",
       dataIndex: "pickup_address",
       key: "pickup_address",
       width: 200,
@@ -212,17 +150,35 @@ const ShipmentListTable = () => {
       dataIndex: "load_type",
       key: "load_type",
       width: 200,
-      ...getColumnSearchProps("current location"),
+      ...getColumnSearchProps("load_type"),
     },
-
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       width: 200,
       ...getColumnSearchProps("status"),
-      sorter: (a, b) => a.location.length - b.location.length,
-      sortDirections: ["descend", "ascend"],
+      render: (status) => {
+        let color;
+        switch (status) {
+          case "IN_PROGRESS":
+            color = "blue";
+            break;
+          case "DELIVERED":
+            color = "green";
+            break;
+          case "":
+            color = "orange";
+            break;
+          case "Cancelled":
+            color = "red";
+            break;
+          default:
+            color = "gray";
+            break;
+        }
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
     },
     {
       title: "Payment",
@@ -238,12 +194,11 @@ const ShipmentListTable = () => {
       width: 100,
       render: (_, record) => (
         <a className="flex gap-3">
-          <IoMdEyeOff onClick={() => goToShipmentDetail(record)} />
-          <MdEdit onClick={() => goToShipmentUpdate(record)} />
+          <EyeOutlined onClick={() => goToShipmentDetail(record)} />
+          <EditOutlined onClick={() => goToShipmentUpdate(record)} />
         </a>
       ),
     },
-    // Add more columns as needed
   ];
 
   return (
@@ -252,47 +207,10 @@ const ShipmentListTable = () => {
       pagination={{ pageSize: 10 }}
       columns={columns}
       dataSource={data?.shipments}
-      scroll={{ x: 1000 }} // Enable horizontal scrolling
+      scroll={{ x: 1000 }}
       className="border border-slate-200 rounded-md"
     />
   );
 };
 
 export default ShipmentListTable;
-// const shipment = {
-//   trackingNumber: "MB123456789",
-//   date: "2024-10-01",
-//   senderName: "John Doe",
-//   receiverName: "Jane Smith",
-//   from: "New York, NY",
-//   to: "Los Angeles, CA",
-//   currentLocation: "Kansas City, MO",
-//   status: "In Transit",
-//   paymentStatus: "Paid",
-//   timelineEvents: [
-//     {
-//       location: "New York, NY",
-//       time: "2024-10-01 10:00 AM",
-//       description: "Shipment picked up",
-//       status: "completed",
-//     },
-//     {
-//       location: "Philadelphia, PA",
-//       time: "2024-10-01 5:00 PM",
-//       description: "In transit",
-//       status: "completed",
-//     },
-//     {
-//       location: "Kansas City, MO",
-//       time: "2024-10-02 9:00 AM",
-//       description: "In transit",
-//       status: "in-progress",
-//     },
-//     {
-//       location: "Los Angeles, CA",
-//       time: "Expected: 2024-10-03",
-//       description: "Out for delivery",
-//       status: "pending",
-//     },
-//   ],
-// };

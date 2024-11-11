@@ -1,4 +1,9 @@
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   DatePicker,
@@ -13,8 +18,6 @@ import {
 import moment from "moment";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdEyeOff, IoMdTrash } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -236,13 +239,16 @@ const StaffListTable = () => {
       width: 100,
       render: (_, record) => (
         <div className="flex gap-3">
-          <IoMdEyeOff
+          <EyeOutlined
             onClick={() =>
               navigate("/main/staff-detail", { state: { staffId: record.id } })
             }
           />
-          <MdEdit onClick={() => showEditModal(record)} />
-          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+          <EditOutlined onClick={() => showEditModal(record)} />
+          <DeleteOutlined
+            color="red"
+            onClick={() => handleDelete(record?.id)}
+          />
         </div>
       ),
     },

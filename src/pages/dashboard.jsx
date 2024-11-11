@@ -102,7 +102,7 @@ const Dashboard = () => {
             }}
             icon={<MdTrackChanges />}
             title="Transport "
-            bgColor={"#fd7e14"} // Orange
+            bgColor={"#303a2b"}
           />
           <CustomAction
             color="default"
@@ -174,7 +174,7 @@ const Dashboard = () => {
             }}
             icon={<MdOutlineCases />}
             title="Financial Assets"
-            bgColor={"#003049"}
+            bgColor={"#7F534B"}
           />
         </div>
         <Divider />

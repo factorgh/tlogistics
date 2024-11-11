@@ -12,8 +12,8 @@ export const TransitApi = baseApi.injectEndpoints({
         invalidatesTags: ["transit"],
       }),
       updateTransit: builder.mutation({
-        query: ({ id, vendorData }) =>
-          transitCrud.update({ id, data: vendorData }),
+        query: ({ id, transitData }) =>
+          transitCrud.update({ id, data: transitData }),
         invalidatesTags: ["transit"],
       }),
       deleteTransit: builder.mutation({

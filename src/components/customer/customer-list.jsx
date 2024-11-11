@@ -1,8 +1,8 @@
-import { SearchOutlined } from "@ant-design/icons";
+import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdEyeOff } from "react-icons/io";
+
 import { useNavigate } from "react-router-dom";
 import { useGetCustomersQuery } from "../../app/services/customer/customer";
 
@@ -139,7 +139,7 @@ const CustomerListTable = () => {
       width: 100,
       render: (_, record) => (
         <a>
-          <IoMdEyeOff
+          <EyeOutlined
             onClick={() =>
               navigate("/main/customer-detail", {
                 state: { customerId: record.id },

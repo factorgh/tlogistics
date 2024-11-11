@@ -1,85 +1,96 @@
-/* eslint-disable react/prop-types */
-import { Button, Form, Input, InputNumber, Spin } from "antd";
-import { useForm } from "antd/es/form/Form";
-import { useEffect } from "react";
+import { Button, Form, Input, InputNumber, Modal, Spin } from "antd";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useCreateTransitMutation } from "../../../app/services/financial-assets/transit";
 
-const TransitAndDemurrageForm = ({ onSubmit, initialValues }) => {
-  const [form] = useForm();
-
+const TransitAndDemurrageModal = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [createTransit, { isLoading }] = useCreateTransitMutation();
+  const [form] = Form.useForm();
 
-  // Set the form values when initialValues changes
-  useEffect(() => {
-    if (initialValues) {
-      form.setFieldsValue(initialValues);
-    }
-  }, [initialValues, form]);
+  // Open the modal
+  const showModal = () => setIsModalVisible(true);
 
+  // Close the modal
+  const handleCancel = () => setIsModalVisible(false);
+
+  // Handle form submit for creating transit
   const handleFormSubmit = async (values) => {
     try {
       await createTransit(values).unwrap();
       toast.success("Transit created successfully");
-
-      onSubmit(); // Assuming this function handles closing the modal or other actions
-      form.resetFields(); // Reset the form after successful submission
+      setIsModalVisible(false); // Close the modal after successful creation
     } catch (error) {
-      toast.error(error.data.message);
-      onSubmit(); // Handle failure and close the modal or show error state
+      toast.error(error?.data?.message || "An error occurred");
     }
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleFormSubmit}
-      initialValues={initialValues || {}} // Ensure initialValues are passed correctly
-    >
-      {/* Job Details */}
-      <Form.Item label="Job ID" name="job" rules={[{ required: true }]}>
-        <Input placeholder="Enter Job ID" />
-      </Form.Item>
+    <div>
+      {/* Add Button to open modal */}
+      <Button type="primary" onClick={showModal}>
+        Add Transit Asset
+      </Button>
 
-      {/* Delay and Demurrage Charges */}
-      <Form.Item
-        label="Delay in Hours"
-        name="delay_in_hour"
-        rules={[{ required: true }]}
+      {/* Modal for Transit Form */}
+      <Modal
+        title="Add Transit Asset"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null} // Remove footer as we have custom buttons inside the form
+        width={600} // Adjust width as needed
       >
-        <InputNumber
-          style={{ width: "100%" }}
-          placeholder="Enter delay in hours"
-        />
-      </Form.Item>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleFormSubmit}
+          initialValues={{}} // Ensure empty object if no initial values
+        >
+          {/* Job Details */}
+          <Form.Item label="Job ID" name="job" rules={[{ required: true }]}>
+            <Input placeholder="Enter Job ID" />
+          </Form.Item>
 
-      <Form.Item
-        label="Demurrage Charge per Hour"
-        name="charge_per_hour"
-        rules={[{ required: true }]}
-      >
-        <InputNumber
-          style={{ width: "100%" }}
-          prefix="GHC"
-          placeholder="Enter charge per hour"
-        />
-      </Form.Item>
+          {/* Delay and Demurrage Charges */}
+          <Form.Item
+            label="Delay in Hours"
+            name="delay_in_hour"
+            rules={[{ required: true }]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="Enter delay in hours"
+            />
+          </Form.Item>
 
-      {/* Save Button */}
-      <Form.Item>
-        {isLoading ? (
-          <Button className="w-full" htmlType="submit" disabled>
-            <Spin />
-          </Button>
-        ) : (
-          <Button type="primary" className="w-full" htmlType="submit">
-            Save Demurrage Details
-          </Button>
-        )}
-      </Form.Item>
-    </Form>
+          <Form.Item
+            label="Demurrage Charge per Hour"
+            name="charge_per_hour"
+            rules={[{ required: true }]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              prefix="GHC"
+              placeholder="Enter charge per hour"
+            />
+          </Form.Item>
+
+          {/* Save Button */}
+          <Form.Item>
+            {isLoading ? (
+              <Button className="w-full" htmlType="submit" disabled>
+                <Spin />
+              </Button>
+            ) : (
+              <Button type="primary" className="w-full" htmlType="submit">
+                Save Demurrage Details
+              </Button>
+            )}
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
   );
 };
 
-export default TransitAndDemurrageForm;
+export default TransitAndDemurrageModal;

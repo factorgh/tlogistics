@@ -1,3 +1,4 @@
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
@@ -11,8 +12,6 @@ import {
 } from "antd";
 import moment from "moment";
 import { useState } from "react";
-import { IoMdTrash } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import {
@@ -145,8 +144,11 @@ const DieselTable = () => {
         <div className="flex gap-3">
           {/* <IoMdEyeOff /> */}
 
-          <MdEdit onClick={() => showEditModal(record)} />
-          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+          <EditOutlined onClick={() => showEditModal(record)} />
+          <DeleteOutlined
+            color="red"
+            onClick={() => handleDelete(record?.id)}
+          />
         </div>
       ),
     },

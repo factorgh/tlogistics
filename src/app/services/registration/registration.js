@@ -12,8 +12,10 @@ export const RegistrationApi = baseApi.injectEndpoints({
         invalidatesTags: ["vehicle_registration"],
       }),
       updateRegistration: builder.mutation({
-        query: ({ id, vendorData }) =>
-          registrationCrud.update({ id, data: vendorData }),
+        query: ({ id, registrationData }) => {
+          console.log(registrationData);
+          registrationCrud.update({ id, data: registrationData });
+        },
         invalidatesTags: ["vehicle_registration"],
       }),
       deleteRegistration: builder.mutation({

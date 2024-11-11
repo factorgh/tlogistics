@@ -12,8 +12,8 @@ export const LogisticsApi = baseApi.injectEndpoints({
         invalidatesTags: ["logistics"],
       }),
       updateLogistic: builder.mutation({
-        query: ({ id, vendorData }) =>
-          logisticsCrud.update({ id, data: vendorData }),
+        query: ({ id, logisticData }) =>
+          logisticsCrud.update({ id, data: logisticData }),
         invalidatesTags: ["logistics"],
       }),
       deleteLogistic: builder.mutation({

@@ -1,4 +1,8 @@
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Divider,
@@ -14,8 +18,6 @@ import TextArea from "antd/es/input/TextArea";
 
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IoMdTrash } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import {
@@ -250,8 +252,11 @@ const TransportMcBerryTable = () => {
         <div className="flex gap-3">
           {/* <IoMdEyeOff /> */}
 
-          <MdEdit onClick={() => showEditModal(record)} />
-          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+          <EditOutlined onClick={() => showEditModal(record)} />
+          <DeleteOutlined
+            color="red"
+            onClick={() => handleDelete(record?.id)}
+          />
         </div>
       ),
     },

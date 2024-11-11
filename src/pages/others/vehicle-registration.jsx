@@ -1,3 +1,4 @@
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
@@ -11,8 +12,6 @@ import {
 } from "antd";
 import moment from "moment";
 import { useState } from "react";
-import { IoMdTrash } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import {
@@ -73,13 +72,14 @@ const VehicleRegistration = () => {
       start_date: values.start_date.$d,
       expiring_date: values.expiring_date.$d,
     };
+    console.log(transformedValues);
 
     try {
       if (isEditMode) {
         // Update registration
         await updateRegistration({
           id: editRegistrationData.id,
-          ...transformedValues,
+          registrationData: transformedValues,
         });
         toast.success("Vehicle Registration Updated Successfully");
       } else {
@@ -155,8 +155,11 @@ const VehicleRegistration = () => {
       key: "action",
       render: (_, record) => (
         <div className="flex gap-3">
-          <MdEdit onClick={() => showEditModal(record)} />
-          <IoMdTrash color="red" onClick={() => handleDelete(record?.id)} />
+          <EditOutlined onClick={() => showEditModal(record)} />
+          <DeleteOutlined
+            color="red"
+            onClick={() => handleDelete(record?.id)}
+          />
         </div>
       ),
     },
@@ -279,10 +282,10 @@ const VehicleRegistration = () => {
             <Form.Item>
               <Button
                 className="w-full"
-                type="primary"
+                type="default"
                 htmlType="submit"
                 block
-                loading={isCreating || isUpdating}
+                // loading={isCreating || isUpdating}
               >
                 {isCreating || isUpdating ? <Spin /> : "Submit"}
               </Button>

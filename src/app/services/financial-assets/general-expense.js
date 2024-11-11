@@ -12,8 +12,8 @@ export const GeneralEXpenseApi = baseApi.injectEndpoints({
         invalidatesTags: ["general_expense"],
       }),
       updateGeneralExpense: builder.mutation({
-        query: ({ id, vendorData }) =>
-          generalExpenseCrud.update({ id, data: vendorData }),
+        query: ({ id, expenseData }) =>
+          generalExpenseCrud.update({ id, data: expenseData }),
         invalidatesTags: ["general_expense"],
       }),
       deleteGeneralExpense: builder.mutation({
